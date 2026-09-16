@@ -33,8 +33,9 @@ export default function Header() {
   }
 
   const isActive = (item) => {
-    if (item.scrollTo) return false
-    return item.to === '/' ? location.pathname === '/' : location.pathname.startsWith(item.to)
+    // 「作品」这一项指向首页的 #projects 区块；在作品详情页也应保持高亮
+    if (item.to === '/') return item.scrollTo ? location.pathname.startsWith('/project') : location.pathname === '/'
+    return location.pathname.startsWith(item.to)
   }
 
   return (
