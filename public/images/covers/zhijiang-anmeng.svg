@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-label="枝江黯梦 封面占位图">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0c11"/>
+      <stop offset="0.55" stop-color="#101419"/>
+      <stop offset="1" stop-color="#0b0e13"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.18" cy="0.12" r="0.95">
+      <stop offset="0" stop-color="#b45cff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#b45cff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.92" cy="0.95" r="0.7">
+      <stop offset="0" stop-color="#6f7bff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#6f7bff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0V64" fill="none" stroke="#ffffff" stroke-opacity="0.045" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#bg)"/>
+  <rect width="1600" height="1000" fill="url(#grid)"/>
+  <rect width="1600" height="1000" fill="url(#glow)"/>
+  <rect width="1600" height="1000" fill="url(#glow2)"/>
+  <g>
+    <rect x="1005" y="99" width="170" height="170" rx="18" fill="none" stroke="#b45cff" stroke-opacity="0.145" stroke-width="2" transform="rotate(62 1005 99)"/>
+    <polygon points="895,894 971,742 1047,894" fill="none" stroke="#b45cff" stroke-opacity="0.135" stroke-width="2"/>
+    <polygon points="785,820 852,686 920,820" fill="none" stroke="#b45cff" stroke-opacity="0.125" stroke-width="2"/>
+    <rect x="675" y="629" width="117" height="117" rx="18" fill="none" stroke="#b45cff" stroke-opacity="0.116" stroke-width="2" transform="rotate(335 675 629)"/>
+    <polygon points="565,671 614,572 664,671" fill="none" stroke="#b45cff" stroke-opacity="0.106" stroke-width="2"/>
+  </g>
+  <text x="1500" y="880" text-anchor="end" font-family="Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif" font-size="420" font-weight="800" fill="#ffffff" fill-opacity="0.05">22</text>
+  <text x="110" y="768" font-family="Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif" font-size="24" letter-spacing="8" fill="#b45cff">GAME PROJECT</text>
+  <text x="110" y="860" font-family="Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif" font-size="92" font-weight="800" fill="#f2f5f9">枝江黯梦</text>
+  <text x="110" y="916" font-family="Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif" font-size="30" fill="#98a3b3">Isometric 双人同屏闯关 · Unity</text>
+  <g font-family="Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif" font-size="20" fill="#ffffff" fill-opacity="0.5">
+    <rect x="110" y="110" width="286" height="44" rx="22" fill="#ffffff" fill-opacity="0.06" stroke="#b45cff" stroke-opacity="0.5"/>
+    <text x="136" y="139">占位封面 · 替换为真实截图</text>
+  </g>
+</svg>
