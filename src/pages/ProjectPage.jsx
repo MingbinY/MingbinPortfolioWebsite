@@ -155,24 +155,26 @@ export default function ProjectPage() {
         )}
       </section>
 
-      <nav className="project-nav" aria-label="作品切换">
-        {prev ? (
-          <Link className="project-nav__item" to={`/project/${prev.slug}`}>
-            <span>← 上一个作品</span>
-            <strong>{prev.title}</strong>
-          </Link>
-        ) : (
-          <span />
-        )}
-        {next ? (
-          <Link className="project-nav__item project-nav__item--next" to={`/project/${next.slug}`}>
-            <span>下一个作品 →</span>
-            <strong>{next.title}</strong>
-          </Link>
-        ) : (
-          <span />
-        )}
-      </nav>
+      {prev || next ? (
+        <nav className="project-nav" aria-label="作品切换">
+          {prev ? (
+            <Link className="project-nav__item" to={`/project/${prev.slug}`}>
+              <span>← 上一个作品</span>
+              <strong>{prev.title}</strong>
+            </Link>
+          ) : (
+            <span />
+          )}
+          {next ? (
+            <Link className="project-nav__item project-nav__item--next" to={`/project/${next.slug}`}>
+              <span>下一个作品 →</span>
+              <strong>{next.title}</strong>
+            </Link>
+          ) : (
+            <span />
+          )}
+        </nav>
+      ) : null}
     </article>
   )
 }

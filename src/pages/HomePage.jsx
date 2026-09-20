@@ -8,7 +8,12 @@ function Hero({ site, projects }) {
     const tags = new Set()
     projects.forEach((project) => project.tags.forEach((tag) => tags.add(tag)))
     const years = projects.map((project) => Number(project.year)).filter((year) => Number.isFinite(year) && year > 1900)
-    const span = years.length ? `${Math.min(...years)} – ${Math.max(...years)}` : '—'
+    const span =
+      years.length === 0
+        ? '—'
+        : Math.min(...years) === Math.max(...years)
+          ? String(Math.min(...years))
+          : `${Math.min(...years)} – ${Math.max(...years)}`
     return [
       { label: '作品数量', value: String(projects.length).padStart(2, '0') },
       { label: '涉及领域', value: String(tags.size).padStart(2, '0') },

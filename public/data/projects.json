@@ -5,23 +5,20 @@
     "新增作品最省事的两种方式：1) 复制下面 projects 数组里的一段，改字段；2) 运行 npm run new:project 按提示逐项填写。",
     "字段说明：slug=网址标识(唯一,英文小写+短横线)；cover=列表页封面图；gallery=详情页横向滚动的多张图；summary=列表页一句话简介；description=详情页作品介绍(用空行分段)；demo=详情页 Demo 链接；accent=该作品的主题色。",
     "图片路径统一相对于站点根目录，例如 images/covers/xxx.svg；也可以直接填完整 https 外链。",
-    "占位图可用 npm run gen:art 重新生成（已存在同名文件不会覆盖，加 --force 才覆盖）。"
+    "占位图可用 npm run gen:art 重新生成（已存在同名文件不会覆盖，加 --force 才覆盖）。",
+    "改完建议跑一次 npm run check 做内容自检。"
   ],
   "site": {
     "title": "MINGBIN YANG",
     "tagline": "游戏设计与开发 · Game Design & Development",
-    "intro": "（这段文字在 public/data/projects.json 的 site.intro 里，替换成你自己的介绍）我专注于玩法原型、关卡设计与系统设计，喜欢把抽象机制快速做成可以上手试玩的东西。下面是我近几年的作品，每个作品都可以点进去看图片、介绍和 Demo。",
+    "intro": "",
     "nav": [
       { "label": "首页", "to": "/" },
       { "label": "作品", "to": "/", "scrollTo": "projects" }
     ],
     "contact": {
-      "email": "hello@example.com",
-      "links": [
-        { "label": "itch.io", "url": "https://example.itch.io" },
-        { "label": "GitHub", "url": "https://github.com/example" },
-        { "label": "Bilibili", "url": "https://space.bilibili.com/example" }
-      ]
+      "email": "",
+      "links": []
     },
     "footer": "欢迎交流合作 · 作品与图片版权归作者所有"
   },
@@ -58,175 +55,6 @@
         { "src": "images/projects/zhijiang-anmeng/02.svg", "caption": "" },
         { "src": "images/projects/zhijiang-anmeng/03.svg", "caption": "" },
         { "src": "images/projects/zhijiang-anmeng/04.svg", "caption": "" }
-      ]
-    },
-    {
-      "slug": "echoes-of-decay",
-      "title": "Echoes of Decay",
-      "subtitle": "第三人称生存恐怖 · UE5",
-      "year": "2024",
-      "role": "主策划 / 关卡设计",
-      "platforms": ["PC", "PlayStation 5"],
-      "tools": ["Unreal Engine 5", "Blueprint", "Blender", "FMOD"],
-      "tags": ["生存恐怖", "关卡设计", "氛围叙事"],
-      "accent": "#ff5c39",
-      "featured": true,
-      "order": 2,
-      "cover": "images/covers/echoes-of-decay.svg",
-      "summary": "在一座被真菌吞噬的疗养院里，用有限的手电电量换取真相的第三人称生存恐怖项目，负责整体玩法框架与三张主关卡的空间设计。",
-      "description": "Echoes of Decay 的核心是「资源即节奏」。玩家手里永远只有一块电池、两发子弹和一条不知道通向哪里的走廊，我们希望恐惧不是来自跳吓，而是来自玩家自己算出来的那笔账：现在开灯，还是黑暗里再走十米。\n\n我负责了玩法框架的搭建与全部关卡的空间布局。设计上先用纸面拓扑把疗养院的动线画成一张图，保证玩家在任何房间都能通过声音线索判断自己离目标有多远；再用手电电量作为「可见度货币」，让灯光的开关直接改变敌人 AI 的搜索行为。\n\n三张主关卡分别验证了三种节奏：慢速探索（西翼病房）、追逐逃脱（锅炉房）、静默潜行（图书馆夹层）。上线前的可玩性测试里，我们把「第一次遭遇敌人前的平均时长」从 42 秒调到 3 分 10 秒，玩家的紧张感评分反而更高——这是这个项目里最有价值的一课。",
-      "highlights": [
-        "设计并实现「电量即可见度」资源循环，替换掉早期版本的弹药经济系统",
-        "用灰盒加声音线索把玩家迷路率从 63% 降到 11%",
-        "搭建关卡设计规范文档与可复用蓝图模块，让关卡迭代速度提升约 2 倍"
-      ],
-      "demo": { "label": "试玩 Demo（itch.io）", "url": "https://example.itch.io/echoes-of-decay" },
-      "links": [{ "label": "设计拆解文章", "url": "https://example.com/echoes-of-decay-design-notes" }],
-      "gallery": [
-        { "src": "images/projects/echoes-of-decay/01.svg", "caption": "西翼病房 · 灰盒阶段的空间与光照基准" },
-        { "src": "images/projects/echoes-of-decay/02.svg", "caption": "手电电量与敌人搜索范围的联动调试界面" },
-        { "src": "images/projects/echoes-of-decay/03.svg", "caption": "锅炉房追逐段：三段式关门机关的节奏图" },
-        { "src": "images/projects/echoes-of-decay/04.svg", "caption": "图书馆夹层 · 静默潜行路线的最终灯光配置" }
-      ]
-    },
-    {
-      "slug": "neon-ronin",
-      "title": "Neon Ronin",
-      "subtitle": "横版动作 Roguelite · Unity",
-      "year": "2023",
-      "role": "战斗设计 / 程序",
-      "platforms": ["PC", "Nintendo Switch"],
-      "tools": ["Unity", "C#", "Spine", "Aseprite"],
-      "tags": ["动作", "Roguelite", "战斗手感"],
-      "accent": "#38e1c8",
-      "featured": true,
-      "order": 3,
-      "cover": "images/covers/neon-ronin.svg",
-      "summary": "赛博武士主题的横版动作 Roguelite，负责近战手感调校、敌人行为设计与全部程序实现。",
-      "description": "Neon Ronin 想做的是「一刀定生死」：没有血条滚动的消耗战，玩家与精英敌人都在三次命中内分出胜负，因此每一次挥刀的重量、无敌帧的长度和音效的延迟都必须精确到帧。\n\n我把战斗拆成三层：输入层（预输入缓存 + 取消窗口）、表现层（屏幕震动、命中停顿、命中特效）和数值层（伤害、位移、击退）。三层解耦之后，调整手感不需要重开项目，改一份 ScriptableObject 就能在 10 秒内验证。\n\n敌人方面做了 7 种基础行为模板，通过组合出 23 种变体，让随机关卡里每次遭遇都有变化但又都在玩家的学习曲线之内。",
-      "highlights": [
-        "手写固定帧战斗状态机，命中判定与表现完全帧同步",
-        "把「命中停顿 + 屏幕震动 + 音效」打包成可配置的打击感预设，策划可独立调参",
-        "搭建基于 ScriptableObject 的关卡随机生成器，单人 3 天产出 40 个可玩房间"
-      ],
-      "demo": { "label": "试玩 Demo（itch.io）", "url": "https://example.itch.io/neon-ronin" },
-      "gallery": [
-        { "src": "images/projects/neon-ronin/01.svg", "caption": "第一关霓虹街区的战斗场景" },
-        { "src": "images/projects/neon-ronin/02.svg", "caption": "架势条与处决窗口的 UI 反馈" },
-        { "src": "images/projects/neon-ronin/03.svg", "caption": "敌人行为模板的组合表" },
-        { "src": "images/projects/neon-ronin/04.svg", "caption": "Boss「提灯者」三阶段弹幕设计稿" }
-      ]
-    },
-    {
-      "slug": "papercraft-kingdom",
-      "title": "Papercraft Kingdom",
-      "subtitle": "空间解谜 · 纸片折页玩法",
-      "year": "2023",
-      "role": "创意原型 / 关卡设计",
-      "platforms": ["PC", "Mobile"],
-      "tools": ["Unity", "C#", "Shadergraph"],
-      "tags": ["解谜", "休闲", "玩法原型"],
-      "accent": "#ffc247",
-      "featured": false,
-      "order": 4,
-      "cover": "images/covers/papercraft-kingdom.svg",
-      "summary": "把立体关卡像折纸一样折叠、翻面来连通道路的休闲解谜原型，48 小时内完成首个可玩版本。",
-      "description": "这个项目源自一次 Game Jam 的题目「折叠」。我们做了一件事：整个关卡是一张可以折叠的纸，玩家折叠纸面时，三维空间里的两块地面会贴在一起，于是角色就能走过去。\n\n技术上的难点在于「折叠后的碰撞与寻路」。我们把折叠操作抽象成对关卡图（Graph）的边重连：折一次 = 合并两个节点，展开 = 恢复。这样寻路不需要每帧重算物理，手机上跑 60 帧也没问题。\n\n最终做了 18 个教学递进的关卡，玩法从「折一次就能过」到「需要三次折叠并计算遮挡顺序」，最后一关的通关率不到 20%，但玩家愿意重试。",
-      "highlights": [
-        "把折叠玩法抽象为图结构重连，避免每帧物理重算，移动端稳定 60 FPS",
-        "设计 18 关递进式教学关卡，用「一次只教一个新概念」的原则控制认知负荷",
-        "Jam 48 小时内完成从创意到可玩版本，获得评委玩法创新奖"
-      ],
-      "demo": { "label": "在线试玩（WebGL）", "url": "https://example.itch.io/papercraft-kingdom" },
-      "gallery": [
-        { "src": "images/projects/papercraft-kingdom/01.svg", "caption": "折叠操作与三维地形联动演示" },
-        { "src": "images/projects/papercraft-kingdom/02.svg", "caption": "关卡图（Graph）重连的可视化调试工具" },
-        { "src": "images/projects/papercraft-kingdom/03.svg", "caption": "教学关卡的难度曲线与新增概念表" },
-        { "src": "images/projects/papercraft-kingdom/04.svg", "caption": "纸材质与折痕的 Shader 效果测试" }
-      ]
-    },
-    {
-      "slug": "tidebound",
-      "title": "Tidebound",
-      "subtitle": "水面竞速探索 · 物理载具",
-      "year": "2022",
-      "role": "载具手感 / 系统设计",
-      "platforms": ["PC"],
-      "tools": ["Unreal Engine 5", "Chaos Physics", "Houdini"],
-      "tags": ["载具", "开放水域", "物理手感"],
-      "accent": "#4ea8ff",
-      "featured": false,
-      "order": 5,
-      "cover": "images/covers/tidebound.svg",
-      "summary": "在一片群岛环礁上驾驶水翼艇竞速与探索的项目，负责载具物理手感、海况系统与航线设计。",
-      "description": "Tidebound 的核心是「让水面成为赛道」。我们用实时海况（浪高、浪向、周期）驱动载具受力，玩家顺浪起跳会获得额外速度，逆浪则会被拍停，于是同一片海域在不同时刻跑出了完全不同的路线。\n\n载具手感调了三轮：第一轮过于真实，玩家平均 8 秒翻船；第二轮加了自动扶正与油门曲线整形，转向响应快了但失去重量感；第三轮把「水翼抬升」做成显式的可操作状态，玩家自己决定什么时候起飞——测试里这条改动的正反馈最强烈。\n\n我还设计了 12 条航线的难度梯度，每条航线都有 2 条以上可行路径，鼓励玩家根据当前海况临时改道。",
-      "highlights": [
-        "用实时海况驱动载具受力，让环境本身成为赛道变量",
-        "把水翼抬升做成显式操作状态，玩家可主动「起飞」，手感反馈显著提升",
-        "设计 12 条多路径航线与海况提示 UI，降低新玩家的挫败感"
-      ],
-      "demo": { "label": "技术演示视频", "url": "https://example.com/tidebound-tech-demo" },
-      "gallery": [
-        { "src": "images/projects/tidebound/01.svg", "caption": "环礁海域的浪况可视化与航线标记" },
-        { "src": "images/projects/tidebound/02.svg", "caption": "载具参数调校面板（油门曲线 / 水翼抬升）" },
-        { "src": "images/projects/tidebound/03.svg", "caption": "顺浪起跳获得额外速度的瞬间" },
-        { "src": "images/projects/tidebound/04.svg", "caption": "12 条航线的难度与路径分支图" }
-      ]
-    },
-    {
-      "slug": "skyward-tactics",
-      "title": "Skyward Tactics",
-      "subtitle": "空中舰队战棋 · 回合制",
-      "year": "2021",
-      "role": "系统设计 / 数值",
-      "platforms": ["PC", "Mobile"],
-      "tools": ["Unity", "C#", "Excel 数值表"],
-      "tags": ["战棋", "数值设计", "策略"],
-      "accent": "#a78bfa",
-      "featured": false,
-      "order": 6,
-      "cover": "images/covers/skyward-tactics.svg",
-      "summary": "以浮空舰队为舞台的回合制战棋，负责战斗系统、数值平衡与 30 个关卡的设计。",
-      "description": "Skyward Tactics 的差异化在设计「高度」这一维度：单位可以在三层高度之间机动，高低差不仅影响伤害，还决定谁能越过舰体、谁能被击落到虚空，于是棋盘从二维变成了一个有代价的三维空间。\n\n数值上我做了一张覆盖 6 种单位、4 种武器相性、3 层高度的伤害矩阵，用 Python 脚本从表格批量生成配置并跑自动对战，5000 局模拟用来验证「没有必胜阵容」。最终随机阵容对战的胜率区间收敛在 46%–54%。\n\n关卡方面写了 30 关，每关都标注了教学目标（新单位、新机制或新地形），并且至少留一条非常规解法，让老玩家有绕路取胜的空间。",
-      "highlights": [
-        "引入高度维度的战斗规则，让走位与机动成为核心决策",
-        "用脚本 + 5000 局自动对战验证平衡，阵容胜率收敛到 46%–54%",
-        "30 关均附带教学目标与一条非常规解法"
-      ],
-      "demo": { "label": "试玩 Demo（itch.io）", "url": "https://example.itch.io/skyward-tactics" },
-      "gallery": [
-        { "src": "images/projects/skyward-tactics/01.svg", "caption": "三层高度的战场与舰队阵列" },
-        { "src": "images/projects/skyward-tactics/02.svg", "caption": "伤害矩阵：单位 / 武器相性 / 高度差" },
-        { "src": "images/projects/skyward-tactics/03.svg", "caption": "自动对战模拟的胜率收敛曲线" },
-        { "src": "images/projects/skyward-tactics/04.svg", "caption": "第 24 关的非常规解法示意" }
-      ]
-    },
-    {
-      "slug": "lantern-town",
-      "title": "Lantern Town",
-      "subtitle": "小镇经营 · 节日节奏",
-      "year": "2021",
-      "role": "系统设计 / 内容设计",
-      "platforms": ["PC", "Mobile"],
-      "tools": ["Godot", "GDScript", "Aseprite"],
-      "tags": ["模拟经营", "内容设计", "轻叙事"],
-      "accent": "#ff7ab8",
-      "featured": false,
-      "order": 7,
-      "cover": "images/covers/lantern-town.svg",
-      "summary": "以灯笼节为周期的小镇经营游戏，玩家要在每 7 天的节庆循环里安排人手、备料与摊位，负责经营系统与全部内容设计。",
-      "description": "Lantern Town 把经营节奏压进一个 7 天的节庆循环：前 4 天准备，第 5 天开市，第 6 天结算，第 7 天复盘并解锁新建筑。循环够短，玩家可以在一个晚上体验两次完整的「规划—翻车—改进」。\n\n内容设计上我写了 40 个居民事件，每个事件都绑定到具体的经营决策（比如修桥的工匠只在玩家囤了木材时才出现），让叙事与系统互为线索，而不是两条平行线。\n\n美术与音效保持像素风低门槛，UI 上只保留三块面板：人手、库存、日程，尽量不让玩家在菜单里迷路。",
-      "highlights": [
-        "设计 7 天节庆循环的经营框架，单次循环 12–15 分钟，便于快速迭代与复盘",
-        "编写 40 个与经营决策强绑定的居民事件，让叙事驱动产出",
-        "用 Godot 从零实现并发布，验证小团队三面板极简 UI 的可行性"
-      ],
-      "demo": { "label": "试玩版（itch.io）", "url": "https://example.itch.io/lantern-town" },
-      "gallery": [
-        { "src": "images/projects/lantern-town/01.svg", "caption": "节庆主街 · 摊位与人流配置" },
-        { "src": "images/projects/lantern-town/02.svg", "caption": "7 天循环的日程与结算面板" },
-        { "src": "images/projects/lantern-town/03.svg", "caption": "居民事件与经营决策的绑定关系表" },
-        { "src": "images/projects/lantern-town/04.svg", "caption": "像素风建筑与灯笼配色测试" }
       ]
     }
   ]
