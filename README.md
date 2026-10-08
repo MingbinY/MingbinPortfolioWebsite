@@ -134,6 +134,7 @@ npm run new:project
       { "label": "作品", "to": "/", "scrollTo": "projects" },  // scrollTo = 跳到首页某个区块 id
       { "label": "关于", "to": "/", "scrollTo": "about" }
     ],
+    "categoryOrder": ["第一人称", "第三人称", "2D", "桌游"],  // 首页筛选栏的显示顺序（只影响顺序；筛选项本身来自各作品的 category）
     "about": {                            // 首页「关于我」区块，整段删掉就不显示
       "title": "关于我",
       "portrait": "images/about/portrait.webp",   // 头像（可删）

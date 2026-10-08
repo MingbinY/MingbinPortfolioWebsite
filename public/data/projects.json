@@ -18,6 +18,7 @@
       { "label": "作品", "to": "/", "scrollTo": "projects" },
       { "label": "关于", "to": "/", "scrollTo": "about" }
     ],
+    "categoryOrder": ["第一人称", "第三人称", "2D", "桌游"],
     "about": {
       "title": "关于我",
       "portrait": "images/about/portrait.webp",
@@ -147,7 +148,7 @@
       "role": "设计 / 开发（与 Casey Viezel 合作）",
       "platforms": ["桌游（实体）"],
       "tools": [],
-      "category": "",
+      "category": "桌游",
       "tags": ["桌游", "Roguelike", "四人合作"],
       "accent": "#ffc247",
       "featured": false,

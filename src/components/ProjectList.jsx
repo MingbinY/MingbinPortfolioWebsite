@@ -6,18 +6,20 @@ const ALL = '全部'
 /**
  * 首页「作品列表」：按分类（category）筛选 + 卡片网格。
  * 分类来自 projects.json 里每个作品的 category 字段，按作品顺序去重生成，
- * 因此想增删筛选项只需要改 JSON，不用动代码。
+ * 顺序可用 site.categoryOrder 指定（没列到的分类排在后面），因此增删筛选项只改 JSON。
  */
-export default function ProjectList({ projects }) {
+export default function ProjectList({ projects, categoryOrder = [] }) {
   const [active, setActive] = useState(ALL)
 
   const categories = useMemo(() => {
-    const set = new Set()
+    const used = new Set()
     projects.forEach((project) => {
-      if (project.category) set.add(project.category)
+      if (project.category) used.add(project.category)
     })
-    return [ALL, ...set]
-  }, [projects])
+    const ordered = categoryOrder.filter((category) => used.has(category))
+    const rest = [...used].filter((category) => !ordered.includes(category))
+    return [ALL, ...ordered, ...rest]
+  }, [projects, categoryOrder])
 
   // 当前分类如果被删掉了（改了 JSON），自动回落到「全部」
   const activeCategory = categories.includes(active) ? active : ALL

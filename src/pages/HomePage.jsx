@@ -184,7 +184,9 @@ export default function HomePage() {
           />
         ) : null}
 
-        {status === 'ready' && projects.length > 0 ? <ProjectList projects={projects} /> : null}
+        {status === 'ready' && projects.length > 0 ? (
+          <ProjectList projects={projects} categoryOrder={site.categoryOrder} />
+        ) : null}
       </section>
 
       <AboutSection about={site.about} contact={site.contact} />

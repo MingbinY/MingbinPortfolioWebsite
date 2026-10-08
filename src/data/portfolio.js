@@ -65,6 +65,7 @@ const DEFAULT_SITE = {
   contact: { email: '', links: [] },
   footer: '',
   about: null,
+  categoryOrder: [],
 }
 
 export function normalizeSite(raw) {
@@ -75,6 +76,7 @@ export function normalizeSite(raw) {
   return {
     ...site,
     nav: nav.length ? nav : DEFAULT_SITE.nav,
+    categoryOrder: toArray(site.categoryOrder).map(String),
     contact: { ...DEFAULT_SITE.contact, ...(site.contact || {}) },
     // 首页「关于我」区块（可选）：没有 about 字段就不渲染
     about: site.about

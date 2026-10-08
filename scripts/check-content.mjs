@@ -133,6 +133,18 @@ async function main() {
     }
   }
 
+  // 首页筛选分类的顺序（可选）：site.categoryOrder
+  const categoryOrder = Array.isArray(site?.categoryOrder) ? site.categoryOrder.map(String) : []
+  if (categoryOrder.length) {
+    const usedCategories = new Set(projects.map((project) => project?.category).filter(Boolean))
+    for (const category of usedCategories) {
+      if (!categoryOrder.includes(category)) infos.push(`分类「${category}」没写进 site.categoryOrder，会排在筛选栏最后`)
+    }
+    for (const category of categoryOrder) {
+      if (!usedCategories.has(category)) infos.push(`site.categoryOrder 里的「${category}」目前没有作品使用，筛选栏不会显示它`)
+    }
+  }
+
   // 站点级图片（首页「关于我」头像等）
   for (const image of [site?.about?.portrait].filter(Boolean)) {
     if (isRemote(image)) continue
