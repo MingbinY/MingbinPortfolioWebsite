@@ -29,8 +29,9 @@ function ScrollManager() {
 function SiteTitle() {
   const { site } = usePortfolioData()
   useEffect(() => {
-    document.title = site.title ? `${site.title} · ${site.tagline || 'Portfolio'}` : 'Game Portfolio'
-  }, [site.title, site.tagline])
+    const name = [site.nameZh, site.title].filter(Boolean).join(' · ')
+    document.title = name ? `${name} · ${site.tagline || 'Portfolio'}` : 'Game Portfolio'
+  }, [site.nameZh, site.title, site.tagline])
   return null
 }
 

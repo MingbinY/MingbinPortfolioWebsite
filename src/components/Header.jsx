@@ -45,7 +45,9 @@ export default function Header() {
           <span className="brand__mark" aria-hidden="true" />
           <span className="brand__text">
             <strong>{site.title}</strong>
-            <small>{site.tagline}</small>
+            <small>
+              {site.nameZh ? `${site.nameZh} · ${(site.tagline || '').split(' · ')[0]}` : site.tagline}
+            </small>
           </span>
         </Link>
 

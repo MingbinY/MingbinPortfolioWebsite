@@ -34,6 +34,7 @@ function Hero({ site, projects }) {
             <span key={`${word}-${index}`}>{word}</span>
           ))}
         </h1>
+        {site.nameZh ? <p className="hero__name-zh">{site.nameZh}</p> : null}
         <p className="hero__tagline">{site.tagline}</p>
         {site.intro ? <p className="hero__intro">{site.intro}</p> : null}
 

@@ -54,6 +54,28 @@
   letter-spacing: 0.01em;
 }
 
+/* 中文名：紧跟在大标题下方 */
+.hero__name-zh {
+  margin-top: 16px;
+  font-size: clamp(20px, 2.7vw, 32px);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: var(--text);
+  opacity: 0.92;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hero__name-zh::before {
+  content: '';
+  width: 40px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  flex: none;
+}
+
 .hero__intro {
   margin-top: 14px;
   max-width: 62ch;

@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="site-footer__inner">
         <div className="site-footer__brand">
-          <strong>{site.title}</strong>
+          <strong>{site.nameZh ? `${site.title} · ${site.nameZh}` : site.title}</strong>
           <p>{site.footer || site.tagline}</p>
         </div>
 

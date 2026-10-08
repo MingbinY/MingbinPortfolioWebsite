@@ -4,6 +4,7 @@
     "改完保存后刷新页面即可（开发模式 npm run dev 时热更新；线上部署时重新上传这个 json 文件也不需要重新打包）。",
     "新增作品最省事的两种方式：1) 复制下面 projects 数组里的一段，改字段；2) 运行 npm run new:project 按提示逐项填写。",
     "字段说明：slug=网址标识(唯一,英文小写+短横线)；category=首页筛选分类(如 第一人称/第三人称/2D，留空则该作品只出现在「全部」里)；tags=详情页展示的标签数组；cover=列表页封面图；gallery=详情页横向滚动的多张图；summary=列表页一句话简介；description=详情页作品介绍(用空行分段)；demo=详情页 Demo 链接；accent=该作品的主题色。",
+    "site.title 是英文名（大标题用），site.nameZh 是中文名（会显示在大标题下方、导航左上角、页脚和浏览器标签页）。",
     "site.about 是首页「关于我」区块的内容（portrait/summary/education/skills），删掉这个字段该区块就不显示。",
     "图片路径统一相对于站点根目录，例如 images/covers/xxx.webp；也可以直接填完整 https 外链。",
     "占位图可用 npm run gen:art 重新生成（已存在同名文件不会覆盖，加 --force 才覆盖）。",
@@ -11,8 +12,9 @@
   ],
   "site": {
     "title": "MINGBIN YANG",
+    "nameZh": "杨铭彬",
     "tagline": "游戏开发与创新 · Game Development and Innovation",
-    "intro": "你好，欢迎来到我的作品集（Game and Dreams）。我是 Mingbin Yang，教育背景是东北大学（Northeastern University）游戏科学与设计硕士（MS in Game Science and Design），以及罗格斯大学（Rutgers University, New Brunswick）信息技术与信息学学士（游戏制作与创新方向）。玩游戏时我常会冒出各种新点子，也想把它们真正做出来、分享给别人，于是开始学习游戏开发与游戏设计。下面是我近几年的作品，点进去可以看到图片、介绍与 Demo。",
+    "intro": "你好，欢迎来到我的作品集（Game and Dreams）。我是杨铭彬（Mingbin Yang），教育背景是东北大学（Northeastern University）游戏科学与设计硕士（MS in Game Science and Design），以及罗格斯大学（Rutgers University, New Brunswick）信息技术与信息学学士（游戏制作与创新方向）。玩游戏时我常会冒出各种新点子，也想把它们真正做出来、分享给别人，于是开始学习游戏开发与游戏设计。下面是我近几年的作品，点进去可以看到图片、介绍与 Demo。",
     "nav": [
       { "label": "首页", "to": "/" },
       { "label": "作品", "to": "/", "scrollTo": "projects" },
@@ -22,7 +24,7 @@
     "about": {
       "title": "关于我",
       "portrait": "images/about/portrait.jpg",
-      "summary": "我是 Mingbin Yang，一名热爱各种类型游戏（FPS、MOBA、TPS……）的游戏设计与开发者。我很喜欢尝试新工具、新技术，也享受把一个想法快速做成能上手试玩的原型。希望你喜欢我的作品！",
+      "summary": "我是杨铭彬（Mingbin Yang），一名热爱各种类型游戏（FPS、MOBA、TPS……）的游戏设计与开发者。我很喜欢尝试新工具、新技术，也享受把一个想法快速做成能上手试玩的原型。希望你喜欢我的作品！",
       "education": [
         "东北大学（Northeastern University）—— 游戏科学与设计硕士（MS in Game Science and Design）",
         "罗格斯大学（Rutgers University, New Brunswick）—— 信息技术与信息学学士，游戏制作与创新方向"

@@ -126,7 +126,8 @@ npm run new:project
 ```jsonc
 {
   "site": {
-    "title": "MINGBIN YANG",              // 站点名（Header / Footer / 首页大标题）
+    "title": "MINGBIN YANG",              // 英文名/站点名（Header 左上角 + 首页大标题 + 页脚）
+    "nameZh": "杨铭彬",                    // 中文名（显示在首页大标题下方、导航左上角小字、页脚、浏览器标签页；留空则不显示）
     "tagline": "游戏开发与创新",            // 副标题
     "intro": "首页 Hero 里的自我介绍段落（留空则不显示）",
     "nav": [                              // Header 导航项

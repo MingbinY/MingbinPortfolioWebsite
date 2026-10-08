@@ -56,6 +56,7 @@ function normalizeGallery(gallery) {
 
 const DEFAULT_SITE = {
   title: 'MINGBIN YANG',
+  nameZh: '',
   tagline: '游戏作品集 · Game Portfolio',
   intro: '',
   nav: [
