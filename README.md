@@ -262,6 +262,55 @@ npm run build      # 产物输出到 docs/（vite.config.js 里 build.outDir 指
 
 > `public/.nojekyll` 会随构建拷进 `docs/`，用来关掉 Pages 默认的 Jekyll 处理（否则下划线开头的文件会被忽略）。
 
+### 腾讯云 COS 静态网站托管（用 GitHub 仓库自动部署）
+
+仓库里已经带了现成的工作流 [`.github/workflows/deploy-cos.yml`](.github/workflows/deploy-cos.yml)：
+push 到 `main` 且 `docs/**` 有变化时，自动把 `docs/` 同步到 COS 根目录（产物已在仓库里，CI 不用装依赖、不用构建，一次部署十几秒）。
+
+**① 在 GitHub 里填 4 个 Secret**（仓库 → Settings → Secrets and variables → Actions → New repository secret）：
+
+| Secret 名称 | 填什么 | 示例 |
+| --- | --- | --- |
+| `TENCENT_SECRET_ID` | 腾讯云 API 密钥 SecretId（建议用**子账号**密钥，只授权这一个存储桶） | `AKIDxxxxxxxxxxxxxxxx` |
+| `TENCENT_SECRET_KEY` | 对应 SecretKey | `xxxxxxxxxxxxxxxx` |
+| `COS_BUCKET` | 存储桶名称，格式 **桶名-APPID**（不是访问域名） | `myportfolio-1250000000` |
+| `COS_REGION` | 存储桶地域 | `ap-guangzhou` |
+
+**② COS 控制台里的设置**：
+
+| 位置 | 填什么 |
+| --- | --- |
+| 存储桶访问权限 | **公有读私有写**（静态网站必须允许匿名 GET） |
+| 静态网站 → 索引文档 | `index.html` |
+| 静态网站 → 错误文档 | `index.html`（HashRouter 其实不会触发；填上以后换 BrowserRouter 也不怕） |
+| 静态网站 → 访问节点 | 直接用，或绑定自定义域名 |
+| （可选）CDN 加速 | 绑定自定义域名后开启；**更新内容后刷新 CDN 缓存**（至少刷新 `/index.html`、`/data/*.json`） |
+
+**③ 上传路径要点**：工作流执行 `coscmd upload -rs --delete ./docs/ /`，即把 **`docs/` 里的内容**放到桶根目录，
+线上地址是 `https://<桶名>.cos.<地域>.myqcloud.com/index.html`（不是 `.../docs/index.html`）。
+因为构建用相对路径 + HashRouter，放在某个前缀（如 `/site/`）也能跑，但放根目录最省事。
+
+**④ 权限最小化**：给子账号只挂一个自定义策略，例如
+
+```json
+{
+  "version": "2.0",
+  "statement": [
+    {
+      "effect": "allow",
+      "action": ["cos:PutObject", "cos:GetObject", "cos:DeleteObject", "cos:HeadObject", "cos:GetBucket"],
+      "resource": ["qcs::cos:ap-guangzhou:uid/1250000000:myportfolio-1250000000/*"]
+    }
+  ]
+}
+```
+
+> 如果改为「CI 自己构建、仓库不提交产物」：把工作流里被注释的 Node 安装 + `npm ci && npm run build` 打开，
+> 上传路径保持 `./docs/`（或在 `vite.config.js` 里改回 `dist/` 后同步改成本路径），并停止提交生成物。
+>
+> 另外，若你用的其实是**腾讯云开发 CloudBase 静态托管**的「GitHub 仓库」部署表单，字段这样填：
+> 代码仓库 = `MingbinY/MingbinPortfolioWebsite`，分支 = `main`，构建命令 = `npm run build`，发布目录 = `docs`，Node 版本 = 22。
+
 ### 只改文案 / 换图时
 
 不动代码的话，**不必重新构建**：直接替换服务器上的 `docs/data/projects.json` 与 `docs/images/**`，访问者刷新即可看到新内容。
