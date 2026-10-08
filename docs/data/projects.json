@@ -30,8 +30,8 @@
         "罗格斯大学（Rutgers University, New Brunswick）—— 信息技术与信息学学士，游戏制作与创新方向"
       ],
       "skills": [
-        { "label": "游戏开发", "value": "Unity 引擎" },
-        { "label": "编程语言", "value": "C#、Python、Java" },
+        { "label": "游戏开发", "value": "Unity 引擎、Unreal Engine 5（UE5）" },
+        { "label": "编程语言", "value": "C#、Python、Java、TypeScript" },
         { "label": "其他", "value": "Adobe XD、视频剪辑" }
       ]
     },
