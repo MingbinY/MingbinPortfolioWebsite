@@ -5,8 +5,6 @@ import { EmptyPanel, ErrorPanel, SkeletonCard } from '../components/Feedback.jsx
 
 function Hero({ site, projects }) {
   const stats = useMemo(() => {
-    const tags = new Set()
-    projects.forEach((project) => project.tags.forEach((tag) => tags.add(tag)))
     const years = projects.map((project) => Number(project.year)).filter((year) => Number.isFinite(year) && year > 1900)
     const span =
       years.length === 0
@@ -16,7 +14,6 @@ function Hero({ site, projects }) {
           : `${Math.min(...years)} – ${Math.max(...years)}`
     return [
       { label: '作品数量', value: String(projects.length).padStart(2, '0') },
-      { label: '涉及领域', value: String(tags.size).padStart(2, '0') },
       { label: '年份跨度', value: span },
     ]
   }, [projects])

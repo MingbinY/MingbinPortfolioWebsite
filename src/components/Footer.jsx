@@ -25,7 +25,6 @@ export default function Footer() {
         <span>
           © {new Date().getFullYear()} {site.title}
         </span>
-        <span>纯静态站点 · 内容由 data/projects.json 驱动</span>
       </div>
     </footer>
   )
