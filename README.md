@@ -239,14 +239,36 @@ npm run gen:art -- --only=xxx
 ## 7. 部署
 
 ```bash
-npm run build      # 产物在 dist/
+npm run build      # 产物输出到 docs/（vite.config.js 里 build.outDir 指定）
 ```
 
-把 `dist/` 整个目录上传到任意静态托管即可（GitHub Pages / Netlify / Vercel / 对象存储 / Nginx）。
-因为用了 HashRouter + 相对路径，**不需要配置 404 重写或子目录 base**。
+`docs/` 是**纯静态产物**，可以直接上传到任意静态托管（GitHub Pages / Netlify / Vercel / 对象存储 / Nginx）。
+因为用了 HashRouter + 相对路径（`base: './'`），**不需要配置 404 重写，也不受子目录影响**。
 
-- 只改文案/换图（不动代码）时：直接替换服务器上的 `dist/data/projects.json` 与 `dist/images/**`，访问者刷新即可看到新内容，无需重新打包。
+### GitHub Pages（无需 CI，直接发布仓库里的 docs/）
+
+产物目录之所以叫 `docs/` 而不是 `dist/`，就是因为 GitHub Pages 的「Deploy from a branch」只允许选
+**根目录 `/`** 或 **`/docs`**；把产物固定输出到 `docs/` 并提交进仓库，就能不写任何工作流直接发布。
+
+1. `npm run build` 生成/刷新 `docs/`
+2. 把 `docs/` 一起提交并推送：
+   ```bash
+   git add docs && git commit -m "build: 更新站点产物" && git push
+   ```
+3. GitHub 仓库 → **Settings → Pages → Build and deployment**
+   - Source 选 **Deploy from a branch**
+   - Branch 选 **main**，Folder 选 **/docs** → Save
+4. 一两分钟后访问：`https://<你的用户名>.github.io/<仓库名>/`（本项目即 `https://mingbiny.github.io/MingbinPortfolioWebsite/`）
+
+> `public/.nojekyll` 会随构建拷进 `docs/`，用来关掉 Pages 默认的 Jekyll 处理（否则下划线开头的文件会被忽略）。
+
+### 只改文案 / 换图时
+
+不动代码的话，**不必重新构建**：直接替换服务器上的 `docs/data/projects.json` 与 `docs/images/**`，访问者刷新即可看到新内容。
+如果走的是 GitHub 仓库，也可以只提交这两个路径下的改动，Pages 会重新发布。
+
 - 若托管平台对静态资源开了长时间强缓存，把 `data/*.json` 与 `images/*` 的缓存时间调短一点，更新会更及时。
+- `docs/` 是生成物：**每次跑 `npm run build` 后记得把它一起提交**，否则线上还是旧版本。
 
 ---
 

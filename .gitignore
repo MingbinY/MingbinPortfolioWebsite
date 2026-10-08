@@ -1,7 +1,8 @@
 # dependencies
 node_modules/
 
-# build output
+# build output：产物输出到 docs/ 并且要提交进仓库（GitHub Pages 只能从根目录或 /docs 发布）
+# 旧的 dist/ 已弃用，如本地还有残留可以随手删掉
 dist/
 
 # logs
