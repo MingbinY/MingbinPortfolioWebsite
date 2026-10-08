@@ -46,6 +46,17 @@ function Hero({ site, projects }) {
               和我聊聊
             </a>
           ) : null}
+          {(site.contact?.links || []).map((link) => (
+            <a
+              key={link.url}
+              className="btn btn--ghost"
+              href={link.url}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              {link.label} ↗
+            </a>
+          ))}
         </div>
 
         <dl className="hero__stats">

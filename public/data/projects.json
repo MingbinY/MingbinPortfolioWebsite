@@ -35,7 +35,10 @@
     },
     "contact": {
       "email": "",
-      "links": [{ "label": "LinkedIn", "url": "https://www.linkedin.com/in/mingbinyang/" }]
+      "links": [
+        { "label": "itch.io 主页", "url": "https://mingbyang.itch.io/" },
+        { "label": "LinkedIn", "url": "https://www.linkedin.com/in/mingbinyang/" }
+      ]
     },
     "footer": "Game and Dreams · 欢迎交流合作，作品与图片版权归作者所有"
   },
@@ -174,67 +177,18 @@
       "order": 5,
       "cover": "images/covers/keyboard-warrior.webp",
       "summary": "一款让玩家把「键盘按键本身」当作道具拖进游戏里使用的元游戏：按键一旦被用掉，对应的键就会暂时失效。",
-      "description": "Keyboard Warrior 是一款元游戏（meta-game）：玩家要把自己键盘上的按键「拖」到游戏里的可交互物体上，才能触发某些功能；而在它们被收回之前，这些键都无法再使用。\n\n核心机制就是这种「牺牲输入」的取舍——为了过关，你必须想清楚愿意放弃哪些按键，并理解每一关独有的机制，才能找到解法。\n\n原站信息：2023 年，平台 PC，类型 休闲 / 平台跳跃，角色 设计 / 开发。（原站此页的网址是 /toki-top）",
+      "description": "Keyboard Warrior（键盘侠）是一款元游戏（meta-game）：玩家要把自己键盘上的按键「拖」到游戏里的方块和 Trigger 上为其附魔，以改变它们的【方向】属性；Trigger 会把对应的方向属性赋予玩家。被拖走的键位在收回之前会一直失效——你得用「牺牲输入」来换关卡里的通路。\n\n具体规则：附魔后 5 秒，或者附魔的 Trigger 被触发时，按键会自动收回；所以每一关都要先想清楚愿意放弃哪些键、什么时候把它们收回来。作者自己的评价是：沙雕又益智的烂梗大杂烩小游戏。\n\n其他信息：2023 年 12 月发布的课程小组作业（三人小组，没有专门美工），使用 Unity 引擎开发，并使用了 Corgi Engine 的素材；合作者 @Resonance1983。原站此页的网址是 /toki-top。\n\nDemo 演示视频见页面底部的按钮。",
       "highlights": [
-        "把键盘按键本身当作道具拖拽使用，用掉后对应按键会失效",
-        "围绕「牺牲输入」的机制设计关卡，每一关都要先理解新规则"
+        "把键盘按键拖进游戏为方块与 Trigger 附魔，用掉的键位在收回前一直失效",
+        "「牺牲输入」的取舍设计：5 秒后或附魔目标被触发时按键自动收回",
+        "三人小组课程作业，使用 Unity + Corgi Engine 开发，2023 年 12 月发布"
       ],
-      "demo": null,
+      "demo": { "label": "观看 Demo 视频（B 站）", "url": "https://www.bilibili.com/video/BV11g4y1f7ku" },
       "links": [],
       "gallery": [
         { "src": "images/projects/keyboard-warrior/01.webp", "caption": "" },
         { "src": "images/projects/keyboard-warrior/02.webp", "caption": "" },
         { "src": "images/projects/keyboard-warrior/03.webp", "caption": "" }
-      ]
-    },
-    {
-      "slug": "autocat",
-      "title": "AUTOCAT",
-      "subtitle": "竞速 · Steam（原站文案待补）",
-      "year": "2023",
-      "role": "设计",
-      "platforms": ["Steam"],
-      "tools": [],
-      "tags": ["竞速", "Steam"],
-      "accent": "#ff7ab8",
-      "featured": false,
-      "order": 6,
-      "cover": "images/covers/autocat.webp",
-      "summary": "竞速类项目（原站这一页的正文还是 Wix 模板占位文字，介绍待补充）。",
-      "description": "原站这一页的正文当时还没有写：页面上仍是模板占位文字（I'm a paragraph. Click here to add your own text and edit me…），所以这里只迁移了确定的信息——2023 年、类型 竞速（Racing）、平台 Steam、角色 设计；页面上另有 DRIVER FRONT、DRIVER BACK 两个栏目。\n\n（这一段留给你补充：写下这个项目的玩法、你负责的部分与成绩，直接改 public/data/projects.json 里这段文字即可；图片已经一起迁移过来了。）",
-      "highlights": [],
-      "demo": null,
-      "links": [],
-      "gallery": [
-        { "src": "images/projects/autocat/01.webp", "caption": "" },
-        { "src": "images/projects/autocat/02.webp", "caption": "" },
-        { "src": "images/projects/autocat/03.webp", "caption": "" },
-        { "src": "images/projects/autocat/04.webp", "caption": "" }
-      ]
-    },
-    {
-      "slug": "master-league",
-      "title": "MASTER LEAGUE",
-      "subtitle": "动作冒险 · Web（原站文案待补）",
-      "year": "2023",
-      "role": "设计",
-      "platforms": ["Web"],
-      "tools": [],
-      "tags": ["动作冒险", "Web"],
-      "accent": "#a78bfa",
-      "featured": false,
-      "order": 7,
-      "cover": "images/covers/master-league.webp",
-      "summary": "动作冒险类项目（原站这一页的正文还是 Wix 模板占位文字，介绍待补充）。",
-      "description": "和 AUTOCAT 一样，原站这一页的正文当时还没有写（仍是 Wix 模板占位文字），这里只迁移了确定的信息——2023 年、类型 动作冒险、平台 Web、角色 设计；页面上另有 ZORD、X WEAPON 两个栏目（角色与武器）。\n\n（这一段留给你补充：写下这个项目的世界观、玩法与你的职责，直接改 public/data/projects.json 里这段文字即可。）",
-      "highlights": [],
-      "demo": null,
-      "links": [],
-      "gallery": [
-        { "src": "images/projects/master-league/01.webp", "caption": "" },
-        { "src": "images/projects/master-league/02.webp", "caption": "" },
-        { "src": "images/projects/master-league/03.webp", "caption": "" },
-        { "src": "images/projects/master-league/04.webp", "caption": "" }
       ]
     }
   ]
