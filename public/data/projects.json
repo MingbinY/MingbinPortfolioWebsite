@@ -4,57 +4,237 @@
     "改完保存后刷新页面即可（开发模式 npm run dev 时热更新；线上部署时重新上传这个 json 文件也不需要重新打包）。",
     "新增作品最省事的两种方式：1) 复制下面 projects 数组里的一段，改字段；2) 运行 npm run new:project 按提示逐项填写。",
     "字段说明：slug=网址标识(唯一,英文小写+短横线)；cover=列表页封面图；gallery=详情页横向滚动的多张图；summary=列表页一句话简介；description=详情页作品介绍(用空行分段)；demo=详情页 Demo 链接；accent=该作品的主题色。",
-    "图片路径统一相对于站点根目录，例如 images/covers/xxx.svg；也可以直接填完整 https 外链。",
+    "site.about 是首页「关于我」区块的内容（portrait/summary/education/skills/nextWork），删掉这个字段该区块就不显示。",
+    "图片路径统一相对于站点根目录，例如 images/covers/xxx.webp；也可以直接填完整 https 外链。",
     "占位图可用 npm run gen:art 重新生成（已存在同名文件不会覆盖，加 --force 才覆盖）。",
     "改完建议跑一次 npm run check 做内容自检。"
   ],
   "site": {
     "title": "MINGBIN YANG",
-    "tagline": "游戏设计与开发 · Game Design & Development",
-    "intro": "",
+    "tagline": "游戏开发与创新 · Game Development and Innovation",
+    "intro": "你好，欢迎来到我的作品集（Game and Dreams）。我是 Mingbin Yang，目前就读于东北大学（Northeastern University）游戏科学与设计硕士项目（MS in Game Science and Design）；本科毕业于罗格斯大学（Rutgers University, New Brunswick），主修信息技术与信息学（游戏制作与创新方向）。玩游戏时我常会冒出各种新点子，也想把它们真正做出来、分享给别人，于是开始学习游戏开发与游戏设计。下面是我近几年的作品，点进去可以看到图片、介绍与 Demo。",
     "nav": [
       { "label": "首页", "to": "/" },
-      { "label": "作品", "to": "/", "scrollTo": "projects" }
+      { "label": "作品", "to": "/", "scrollTo": "projects" },
+      { "label": "关于", "to": "/", "scrollTo": "about" }
     ],
+    "about": {
+      "title": "关于我",
+      "portrait": "images/about/portrait.webp",
+      "summary": "我是 Mingbin Yang，一名热爱各种类型游戏（FPS、MOBA、TPS……）的游戏设计与开发者。我很喜欢尝试新工具、新技术，也享受把一个想法快速做成能上手试玩的原型。希望你喜欢我的作品！",
+      "education": [
+        "东北大学（Northeastern University）—— 游戏科学与设计硕士（MS in Game Science and Design），在读",
+        "罗格斯大学（Rutgers University, New Brunswick）—— 信息技术与信息学学士，游戏制作与创新方向"
+      ],
+      "skills": [
+        { "label": "游戏开发", "value": "Unity 引擎" },
+        { "label": "编程语言", "value": "C#、Python、Java" },
+        { "label": "其他", "value": "Adobe XD、视频剪辑" }
+      ],
+      "nextWork": "下一部作品：Spring —— 一款 2D 平台跳跃游戏（开发中）"
+    },
     "contact": {
       "email": "",
-      "links": []
+      "links": [{ "label": "LinkedIn", "url": "https://www.linkedin.com/in/mingbinyang/" }]
     },
-    "footer": "欢迎交流合作 · 作品与图片版权归作者所有"
+    "footer": "Game and Dreams · 欢迎交流合作，作品与图片版权归作者所有"
   },
   "projects": [
     {
-      "slug": "zhijiang-anmeng",
-      "title": "枝江黯梦",
-      "subtitle": "Isometric 双人同屏闯关 · Unity",
+      "slug": "purge-the-village",
+      "title": "This Entire Village Must Be Purged",
+      "subtitle": "第一人称射击 · 潜行与抉择",
       "year": "2022",
-      "role": "团队项目（三人协作：策划 / 程序 / 美术）",
-      "platforms": ["PC"],
+      "role": "主程序 / 设计（与 Tommy Lin 合作）",
+      "platforms": ["PC (Windows)"],
       "tools": ["Unity", "C#"],
-      "tags": ["A-SOUL 二创", "双人同屏", "Isometric", "闯关"],
+      "tags": ["第一人称射击", "潜行", "叙事抉择"],
+      "accent": "#ff5c39",
+      "featured": false,
+      "order": 1,
+      "cover": "images/covers/purge-the-village.webp",
+      "summary": "潜入沙漠深处被恐怖分子占据的小村，阻止生化武器实验：是当场击毙尚未变异的平民，还是等他们变成丧尸再动手——两条路会通向不同的难度与结局。",
+      "description": "《必须肃清这座村庄》（This Entire Village Must Be Purged）是一款使用 Unity 引擎开发的第一人称射击游戏，由我与 Tommy Lin 合作完成。玩家扮演特种部队士兵，潜入位于沙漠中的小村庄，阻止恐怖分子扩散生化武器、拯救世界。\n\n游戏的核心在于玩家一路上必须做出的抉择：任务要求杀光村里所有被生化武器感染的活物，而村民已经全部感染、无药可救。你可以选择「快且不人道」——直接击毙还没变异的平民；也可以选择等待他们先变成丧尸再动手，代价是难度明显提高，但处理方式更人道。这些选择会同时影响战斗难度与最终结局。\n\n原站信息：2022 年 5 月，平台 Windows，类型第一人称射击，角色 程序 / 设计。Demo 提供中文演示视频，点下面的按钮即可观看。",
+      "highlights": [
+        "「快且不人道」与「人道但更难」的二选一设计，直接改变难度与结局",
+        "与 Tommy Lin 合作，使用 Unity 引擎完成开发",
+        "提供中文 Demo 演示视频"
+      ],
+      "demo": { "label": "观看中文 Demo（B 站）", "url": "https://www.bilibili.com/video/BV1jU4y1B7xQ" },
+      "links": [],
+      "gallery": [
+        { "src": "images/projects/purge-the-village/01.webp", "caption": "" },
+        { "src": "images/projects/purge-the-village/02.webp", "caption": "" },
+        { "src": "images/projects/purge-the-village/03.webp", "caption": "" },
+        { "src": "images/projects/purge-the-village/04.webp", "caption": "" }
+      ]
+    },
+    {
+      "slug": "dark-dreams-of-zhijiang",
+      "title": "枝江黯梦",
+      "subtitle": "Dark Dreams of Zhijiang · Isometric 双人同屏解谜",
+      "year": "2022",
+      "role": "主设计 / 主程序（三人团队）",
+      "platforms": ["PC (Windows)"],
+      "tools": ["Unity", "C#"],
+      "tags": ["A-SOUL 二创", "双人同屏", "解谜", "获奖作品"],
       "accent": "#b45cff",
       "featured": true,
-      "order": 1,
-      "cover": "images/covers/zhijiang-anmeng.svg",
-      "summary": "以虚拟偶像组合 Asoul 为主题、使用 Unity 引擎开发的 Isometric 视角双人同屏闯关游戏；2022 稀土掘金编程挑战赛游戏赛道一等奖作品。",
-      "description": "《枝江黯梦》是以虚拟偶像组合 A-SOUL 为主题、使用 Unity 引擎开发的 Isometric（等距视角）双人同屏闯关游戏。故事里 A-SOUL 的五位成员因为压力与难解的心结陷入沉睡，玩家分别扮演嘉心糖、顶碗人、贝极星、奶淇琳、黄嘉琪，进入她们的梦境去了解她们的苦楚，击败藏在最深处的梦魇，把沉睡的她们唤醒。\n\n本项目为 2022 稀土掘金编程挑战赛游戏赛道的参赛作品，最终获得该赛道一等奖。三人小队在有限的比赛工期内完成了从玩法设计、关卡搭建到程序实现、美术与 UI 表现的全流程；作为 Demo，它主要用于展示玩法框架与画面风格，并不代表最终品质。\n\n（这一段留给你自己补充：写下你在这个项目里具体负责的部分——例如玩法/关卡设计、程序、TA 或 UI，直接改 public/data/projects.json 里这段文字即可）\n\n团队分工：策划 / 美术设计 / 文案 / 关卡设计 @乡乡乡乡乡乡乡乡乡长；场景 / TA / 程序 / UI 设计及 UI 动画 @汐鸣ひまわり；主程序 / 策划 / 主玩法设计与开发 @软貂。形象来源 @A-SOUL_Official，A-SOUL 形象版权归 A-SOUL 所有。",
+      "order": 2,
+      "cover": "images/covers/dark-dreams-of-zhijiang.webp",
+      "summary": "以虚拟偶像组合 A-SOUL 为主题、使用 Unity 引擎开发的 Isometric 视角双人同屏闯关解谜游戏；获得稀土掘金 2022 编程挑战赛游戏赛道一等奖。",
+      "description": "《枝江黯梦》（Dark Dreams of Zhijiang）是为「稀土掘金 2022 编程挑战赛」创作的作品，比赛主题围绕中国虚拟偶像组合 A-SOUL，最终拿到该赛道的第一名。游戏使用 Unity 引擎开发，采用 Isometric（等距）视角，需要两名玩家在同一台电脑上同屏协作。\n\n剧情：A-SOUL 的五位女孩因为工作压力和难以解开的心结陷入沉睡，再也没有醒来。作为她们的忠实粉丝，你要进入她们的梦境，用你的爱与本领去解开梦里的心结，把阳光带进她们的黯梦，一路走到梦境最深处——醒来吧，我的宝贝！\n\n玩法：两位玩家需要互相配合，解开关卡中的谜题、把镜子搬到正确的位置，让「希望之光」照进噩梦的最深处，最后击败梦境尽头的 BOSS。\n\n设计动机：A-SOUL 的粉丝创造了一种外人很难理解的亚文化，这个游戏就是想把我们的梗与热爱分享给愿意了解它的人，表达我们喜欢她们的理由，把这份快乐传递给更多人。\n\n团队分工：策划 / 美术设计 / 文案 / 关卡设计 @乡乡乡乡乡乡乡乡乡长；场景 / TA / 程序 / UI 设计及 UI 动画 @汐鸣ひまわり；主程序 / 策划 / 主玩法设计与开发 @软貂。形象来源 @A-SOUL_Official，A-SOUL 形象版权归 A-SOUL 所有。",
       "highlights": [
-        "2022 稀土掘金编程挑战赛游戏赛道一等奖",
-        "Isometric 等距视角 + 双人同屏，两位玩家同机协作闯关",
-        "以 A-SOUL 五位成员的梦境作为关卡主题，让玩法与角色叙事互相绑定"
+        "稀土掘金 2022 编程挑战赛游戏赛道一等奖",
+        "双人同屏协作解谜：搬动镜子，把「希望之光」照进梦境最深处",
+        "以 A-SOUL 粉丝亚文化为设计母题，让玩法与叙事互相绑定",
+        "团队三人协作，负责主设计与主程序"
       ],
       "demo": { "label": "观看演示视频（B 站）", "url": "https://www.bilibili.com/video/BV1T5411d7Hp" },
       "links": [
         {
           "label": "掘金 2022 编程挑战赛作品页",
           "url": "https://hackathon2022.juejin.cn/#/works/detail?unique=AJuapXoHCitYLTbe1rltvw"
-        }
+        },
+        { "label": "A-SOUL 资料（Fandom）", "url": "https://virtualyoutuber.fandom.com/wiki/A-soul" }
       ],
       "gallery": [
-        { "src": "images/projects/zhijiang-anmeng/01.svg", "caption": "" },
-        { "src": "images/projects/zhijiang-anmeng/02.svg", "caption": "" },
-        { "src": "images/projects/zhijiang-anmeng/03.svg", "caption": "" },
-        { "src": "images/projects/zhijiang-anmeng/04.svg", "caption": "" }
+        { "src": "images/projects/dark-dreams-of-zhijiang/01.webp", "caption": "" },
+        { "src": "images/projects/dark-dreams-of-zhijiang/02.webp", "caption": "" },
+        { "src": "images/projects/dark-dreams-of-zhijiang/03.webp", "caption": "" },
+        { "src": "images/projects/dark-dreams-of-zhijiang/04.webp", "caption": "" },
+        { "src": "images/projects/dark-dreams-of-zhijiang/05.webp", "caption": "" }
+      ]
+    },
+    {
+      "slug": "ava-revenge",
+      "title": "Ava's Revenge（原型）",
+      "subtitle": "俯视角射击 × 塔防 · WebGL 可玩原型",
+      "year": "2022",
+      "role": "设计 / 程序（个人项目）",
+      "platforms": ["PC", "WebGL"],
+      "tools": ["Unity", "C#"],
+      "tags": ["俯视角射击", "塔防", "WebGL"],
+      "accent": "#4ea8ff",
+      "featured": false,
+      "order": 3,
+      "cover": "images/covers/ava-revenge.webp",
+      "summary": "把俯视角射击与塔防结合起来的核心循环原型：建造炮塔撑过一波波随机刷新的敌人，每撑过一波都能获得新武器。",
+      "description": "Ava's Revenge 是罗格斯大学游戏设计课程的个人项目，从 Unity Learn 的 Roll-A-Ball 教程项目打磨而来，用来验证「俯视角射击 + 塔防」这套组合玩法玩起来会是什么感觉。\n\n游戏是波次制的俯视角射击：玩家需要建造炮塔，抵挡地图上随机刷新的敌人；每撑过一波会获得新武器作为奖励，击杀敌人赚到的钱则用来继续建塔。\n\n除了玩法，还有一段没有在 Demo 里呈现的背景故事：球之国的战士 Ava 受「球王」委托守卫王国，她一路战斗到胶囊国，必须坚持到太阳升起、等到援军抵达——为了球的荣耀，活下去！\n\n原站信息：2022 年 10 月，平台 WebGL，类型俯视角射击，角色 设计 / 程序。原型可以直接在网页里试玩。",
+      "highlights": [
+        "俯视角射击 + 塔防的玩法组合原型",
+        "波次结束奖励新武器，击杀收益用于建造炮塔",
+        "由 Unity Learn 的 Roll-A-Ball 项目打磨而来，可直接在网页试玩"
+      ],
+      "demo": { "label": "在线试玩原型（WebGL）", "url": "https://mingbiny.github.io/ProjectBalls/WebGL_Build/" },
+      "links": [],
+      "gallery": [
+        { "src": "images/projects/ava-revenge/01.webp", "caption": "" },
+        { "src": "images/projects/ava-revenge/02.webp", "caption": "" }
+      ]
+    },
+    {
+      "slug": "delve-into-the-dungeon",
+      "title": "Delve Into The Dungeon",
+      "subtitle": "四人同桌 Roguelike 桌游 · 纸面原型",
+      "year": "2022",
+      "role": "设计 / 开发（与 Casey Viezel 合作）",
+      "platforms": ["桌游（实体）"],
+      "tools": [],
+      "tags": ["桌游", "Roguelike", "四人合作"],
+      "accent": "#ffc247",
+      "featured": false,
+      "order": 4,
+      "cover": "images/covers/delve-into-the-dungeon.webp",
+      "summary": "为「游戏设计方法论」课程制作的四人 Roguelike 桌游原型：在未知节点之间做团队决策、一路战斗到地下城尽头的 BOSS。",
+      "description": "Delve Into The Dungeon 是罗格斯大学「游戏设计方法论」课程的课程作业，与 Casey Viezel 合作完成。它相当于一个桌面版的《杀戮尖塔》（Slay the Spire），并做了大量改造让它适合在餐桌上玩：四名玩家共同决策、一起打到最后的地下城 BOSS。\n\n每位玩家都有一张属性和技能各不相同的角色卡，探索途中做的每个决定都会触发随机生成的事件，因此每一局的路线与遭遇都不一样，重开一局就是全新的地牢。\n\n原站信息：2022 年 5 月，平台 桌游，类型 Roguelike / 冒险 / 卡牌，角色 设计。实体原型已经做过打印与试玩测试。",
+      "highlights": [
+        "四人同桌的 Roguelike 桌游原型",
+        "角色卡拥有独立数值与技能，探索决策触发随机事件",
+        "为桌面对战重新设计规则，灵感来自《杀戮尖塔》"
+      ],
+      "demo": null,
+      "links": [],
+      "gallery": [
+        { "src": "images/projects/delve-into-the-dungeon/01.webp", "caption": "实体原型盒（自行打印制作的版本）" },
+        { "src": "images/projects/delve-into-the-dungeon/02.webp", "caption": "" }
+      ]
+    },
+    {
+      "slug": "keyboard-warrior",
+      "title": "Keyboard Warrior",
+      "subtitle": "2D 平台跳跃 · 元游戏玩法",
+      "year": "2023",
+      "role": "设计 / 开发",
+      "platforms": ["PC"],
+      "tools": [],
+      "tags": ["2D 平台跳跃", "元游戏", "创意玩法"],
+      "accent": "#38e1c8",
+      "featured": false,
+      "order": 5,
+      "cover": "images/covers/keyboard-warrior.webp",
+      "summary": "一款让玩家把「键盘按键本身」当作道具拖进游戏里使用的元游戏：按键一旦被用掉，对应的键就会暂时失效。",
+      "description": "Keyboard Warrior 是一款元游戏（meta-game）：玩家要把自己键盘上的按键「拖」到游戏里的可交互物体上，才能触发某些功能；而在它们被收回之前，这些键都无法再使用。\n\n核心机制就是这种「牺牲输入」的取舍——为了过关，你必须想清楚愿意放弃哪些按键，并理解每一关独有的机制，才能找到解法。\n\n原站信息：2023 年，平台 PC，类型 休闲 / 平台跳跃，角色 设计 / 开发。（原站此页的网址是 /toki-top）",
+      "highlights": [
+        "把键盘按键本身当作道具拖拽使用，用掉后对应按键会失效",
+        "围绕「牺牲输入」的机制设计关卡，每一关都要先理解新规则"
+      ],
+      "demo": null,
+      "links": [],
+      "gallery": [
+        { "src": "images/projects/keyboard-warrior/01.webp", "caption": "" },
+        { "src": "images/projects/keyboard-warrior/02.webp", "caption": "" },
+        { "src": "images/projects/keyboard-warrior/03.webp", "caption": "" }
+      ]
+    },
+    {
+      "slug": "autocat",
+      "title": "AUTOCAT",
+      "subtitle": "竞速 · Steam（原站文案待补）",
+      "year": "2023",
+      "role": "设计",
+      "platforms": ["Steam"],
+      "tools": [],
+      "tags": ["竞速", "Steam"],
+      "accent": "#ff7ab8",
+      "featured": false,
+      "order": 6,
+      "cover": "images/covers/autocat.webp",
+      "summary": "竞速类项目（原站这一页的正文还是 Wix 模板占位文字，介绍待补充）。",
+      "description": "原站这一页的正文当时还没有写：页面上仍是模板占位文字（I'm a paragraph. Click here to add your own text and edit me…），所以这里只迁移了确定的信息——2023 年、类型 竞速（Racing）、平台 Steam、角色 设计；页面上另有 DRIVER FRONT、DRIVER BACK 两个栏目。\n\n（这一段留给你补充：写下这个项目的玩法、你负责的部分与成绩，直接改 public/data/projects.json 里这段文字即可；图片已经一起迁移过来了。）",
+      "highlights": [],
+      "demo": null,
+      "links": [],
+      "gallery": [
+        { "src": "images/projects/autocat/01.webp", "caption": "" },
+        { "src": "images/projects/autocat/02.webp", "caption": "" },
+        { "src": "images/projects/autocat/03.webp", "caption": "" },
+        { "src": "images/projects/autocat/04.webp", "caption": "" }
+      ]
+    },
+    {
+      "slug": "master-league",
+      "title": "MASTER LEAGUE",
+      "subtitle": "动作冒险 · Web（原站文案待补）",
+      "year": "2023",
+      "role": "设计",
+      "platforms": ["Web"],
+      "tools": [],
+      "tags": ["动作冒险", "Web"],
+      "accent": "#a78bfa",
+      "featured": false,
+      "order": 7,
+      "cover": "images/covers/master-league.webp",
+      "summary": "动作冒险类项目（原站这一页的正文还是 Wix 模板占位文字，介绍待补充）。",
+      "description": "和 AUTOCAT 一样，原站这一页的正文当时还没有写（仍是 Wix 模板占位文字），这里只迁移了确定的信息——2023 年、类型 动作冒险、平台 Web、角色 设计；页面上另有 ZORD、X WEAPON 两个栏目（角色与武器）。\n\n（这一段留给你补充：写下这个项目的世界观、玩法与你的职责，直接改 public/data/projects.json 里这段文字即可。）",
+      "highlights": [],
+      "demo": null,
+      "links": [],
+      "gallery": [
+        { "src": "images/projects/master-league/01.webp", "caption": "" },
+        { "src": "images/projects/master-league/02.webp", "caption": "" },
+        { "src": "images/projects/master-league/03.webp", "caption": "" },
+        { "src": "images/projects/master-league/04.webp", "caption": "" }
       ]
     }
   ]

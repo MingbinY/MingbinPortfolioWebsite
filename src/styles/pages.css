@@ -457,3 +457,129 @@
     align-items: flex-start;
   }
 }
+
+/* =========================================================
+   Home — about & contact
+   ========================================================= */
+.about {
+  scroll-margin-top: calc(var(--header-h) + 20px);
+}
+
+.about__grid {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+  gap: 44px;
+  align-items: start;
+}
+
+.about__portrait {
+  margin: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.about__portrait img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.about__body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.about__summary {
+  color: #c8d0da;
+  font-size: 15.5px;
+  max-width: 70ch;
+}
+
+.about__block h3,
+.about__contact h3 {
+  font-size: 12.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.about__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.about__list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: 14.5px;
+}
+
+.about__list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.about__skills {
+  margin: 0;
+  display: grid;
+}
+
+.about__skills > div {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 14px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  font-size: 14.5px;
+}
+
+.about__skills > div:first-child {
+  border-top: none;
+}
+
+.about__skills dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.about__skills dd {
+  margin: 0;
+  color: var(--text);
+}
+
+.about__contact-text {
+  color: var(--muted);
+  font-size: 14.5px;
+  margin-bottom: 14px;
+}
+
+.about__contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 900px) {
+  .about__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .about__portrait {
+    max-width: 220px;
+  }
+}

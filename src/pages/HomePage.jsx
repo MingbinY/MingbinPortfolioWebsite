@@ -61,6 +61,83 @@ function Hero({ site, projects }) {
   )
 }
 
+function AboutSection({ about, contact }) {
+  if (!about) return null
+  const links = contact?.links || []
+
+  return (
+    <section className="section about" id="about">
+      <div className="section__head">
+        <div>
+          <p className="section__eyebrow">About &amp; Contact</p>
+          <h2 className="section__title">{about.title}</h2>
+        </div>
+        {about.nextWork ? <p className="section__desc">{about.nextWork}</p> : null}
+      </div>
+
+      <div className="about__grid">
+        {about.portrait ? (
+          <figure className="about__portrait">
+            <img src={about.portrait} alt={`${about.title} 头像`} loading="lazy" />
+          </figure>
+        ) : null}
+
+        <div className="about__body">
+          {about.summary ? <p className="about__summary">{about.summary}</p> : null}
+
+          {about.education.length ? (
+            <div className="about__block">
+              <h3>教育经历</h3>
+              <ul className="about__list">
+                {about.education.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {about.skills.length ? (
+            <div className="about__block">
+              <h3>技能</h3>
+              <dl className="about__skills">
+                {about.skills.map((item) => (
+                  <div key={`${item.label}-${item.value}`}>
+                    <dt>{item.label}</dt>
+                    <dd>{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          ) : null}
+
+          <div className="about__contact">
+            <h3>联系我</h3>
+            <p className="about__contact-text">欢迎就合作、实习与全职机会联系我。</p>
+            <div className="about__contact-links">
+              {contact?.email ? (
+                <a className="btn btn--primary" href={`mailto:${contact.email}`}>
+                  {contact.email}
+                </a>
+              ) : null}
+              {links.map((link) => (
+                <a
+                  key={link.url}
+                  className="btn btn--ghost"
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {link.label} ↗
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function HomePage() {
   const { status, error, retry, projects, site } = usePortfolioData()
 
@@ -98,6 +175,8 @@ export default function HomePage() {
 
         {status === 'ready' && projects.length > 0 ? <ProjectList projects={projects} /> : null}
       </section>
+
+      <AboutSection about={site.about} contact={site.contact} />
     </>
   )
 }

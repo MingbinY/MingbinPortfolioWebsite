@@ -128,6 +128,16 @@ async function main() {
     }
   }
 
+  // 站点级图片（首页「关于我」头像等）
+  for (const image of [site?.about?.portrait].filter(Boolean)) {
+    if (isRemote(image)) continue
+    const relative = String(image).replace(/^\.?\//, '')
+    referenced.add(relative)
+    if (!(await fileExists(localPath(image)))) {
+      errors.push(`site.about.portrait：图片不存在 → public/${relative}`)
+    }
+  }
+
   const allFiles = (await collectFiles(path.join(PUBLIC_DIR, 'images'))).map((file) => `images/${file}`)
   const unused = allFiles.filter((file) => !referenced.has(file))
 

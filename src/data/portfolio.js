@@ -64,6 +64,7 @@ const DEFAULT_SITE = {
   ],
   contact: { email: '', links: [] },
   footer: '',
+  about: null,
 }
 
 export function normalizeSite(raw) {
@@ -75,6 +76,19 @@ export function normalizeSite(raw) {
     ...site,
     nav: nav.length ? nav : DEFAULT_SITE.nav,
     contact: { ...DEFAULT_SITE.contact, ...(site.contact || {}) },
+    // 首页「关于我」区块（可选）：没有 about 字段就不渲染
+    about: site.about
+      ? {
+          title: site.about.title || '关于我',
+          portrait: resolveAsset(site.about.portrait),
+          summary: site.about.summary || '',
+          education: toArray(site.about.education).map(String),
+          skills: toArray(site.about.skills)
+            .filter((item) => item && (item.label || item.value))
+            .map((item) => ({ label: item.label || '', value: item.value || '' })),
+          nextWork: site.about.nextWork || '',
+        }
+      : null,
   }
 }
 

@@ -127,18 +127,29 @@ npm run new:project
 {
   "site": {
     "title": "MINGBIN YANG",              // 站点名（Header / Footer / 首页大标题）
-    "tagline": "游戏设计与开发",           // 副标题
-    "intro": "首页 Hero 里的自我介绍段落",
+    "tagline": "游戏开发与创新",            // 副标题
+    "intro": "首页 Hero 里的自我介绍段落（留空则不显示）",
     "nav": [                              // Header 导航项
       { "label": "首页", "to": "/" },
-      { "label": "作品", "to": "/", "scrollTo": "projects" }  // scrollTo = 跳到首页某个区块 id
+      { "label": "作品", "to": "/", "scrollTo": "projects" },  // scrollTo = 跳到首页某个区块 id
+      { "label": "关于", "to": "/", "scrollTo": "about" }
     ],
-    "contact": { "email": "hello@example.com", "links": [{ "label": "itch.io", "url": "https://…" }] },
+    "about": {                            // 首页「关于我」区块，整段删掉就不显示
+      "title": "关于我",
+      "portrait": "images/about/portrait.webp",   // 头像（可删）
+      "summary": "一段自我介绍",
+      "education": ["学校 A —— 学位（在读）", "学校 B —— 学位"],
+      "skills": [{ "label": "游戏开发", "value": "Unity 引擎" }],
+      "nextWork": "下一部作品：Spring —— 2D 平台跳跃（开发中）"
+    },
+    "contact": { "email": "you@example.com", "links": [{ "label": "LinkedIn", "url": "https://…" }] },
     "footer": "页脚一句话"
   },
   "projects": [ /* 见下表 */ ]
 }
 ```
+
+> `email` 留空时，Header 的「联系我」按钮、Hero 的「和我聊聊」按钮都会自动隐藏；`links` 会显示在首页「关于我」区块与页脚。
 
 单个作品：
 
@@ -180,12 +191,13 @@ npm run check
 ```bash
 npm run gen:art             # 只补齐缺失的图（不覆盖已有文件）
 npm run gen:art -- --force  # 覆盖同名文件
-npm run gen:art -- --only=neon-ronin
+npm run gen:art -- --only=xxx
 ```
 
 - 占位图是按 `projects.json` 里实际引用的路径生成的，所以「JSON 写什么就生成什么」。
-- 换真实截图：**把图片放到同名的路径**即可（例如 `public/images/covers/neon-ronin.svg` → 换成 `neon-ronin.png` 时，把 JSON 里的扩展名一起改掉）。
-- 建议格式：封面 16:10 左右、展示图 16:9，宽度 1600–2000px，单张控制在 300KB 以内。
+- 换真实截图：**把图片放到同名的路径**即可（例如 `public/images/covers/xxx.svg` → 换成 `xxx.webp` 时，把 JSON 里的扩展名一起改掉）。
+- 现有图片来自原 Wix 作品集：封面在 `public/images/covers/<slug>.webp`，详情图在 `public/images/projects/<slug>/01.webp`…
+- 建议格式：封面 16:10 左右、展示图 16:9，宽度 1600–2000px，单张控制在 300–500KB（WebP 体积更小，浏览器都支持）。
 
 ---
 
