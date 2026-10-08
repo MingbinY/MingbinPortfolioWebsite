@@ -261,6 +261,11 @@ npm run build      # 产物输出到 docs/（vite.config.js 里 build.outDir 指
 4. 一两分钟后访问：`https://<你的用户名>.github.io/<仓库名>/`（本项目即 `https://mingbiny.github.io/MingbinPortfolioWebsite/`）
 
 > `public/.nojekyll` 会随构建拷进 `docs/`，用来关掉 Pages 默认的 Jekyll 处理（否则下划线开头的文件会被忽略）。
+>
+> **自定义域名（CNAME）**：本项目把域名放在 `public/CNAME`（内容就是一整行纯域名，例如 `mingbinportfolio.com`），
+> 构建时自动拷成 `docs/CNAME`。**不要只依赖 GitHub 网页生成的 `docs/CNAME`**——`vite build` 每次都清空 `docs/`
+> （`emptyOutDir: true`），会被一起删掉；放在 `public/CNAME` 才是持久的。同时记得在 Pages 设置里填 Custom domain，
+> 并在 DNS 里加一条 CNAME 记录指向 `<用户名>.github.io`。
 
 ### 腾讯云 COS 静态网站托管（用 GitHub 仓库自动部署）
 
