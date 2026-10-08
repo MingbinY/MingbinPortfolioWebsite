@@ -178,6 +178,39 @@ npm run new:project
 
 图片路径规则：**相对于站点根目录**，例如 `images/covers/xxx.svg`；也可以直接写完整 `https://` 外链。
 
+### 首页文案改哪里（对照表）
+
+**绝大多数文字都在 `public/data/projects.json`**，改完保存、刷新页面即可，不用重新打包：
+
+| 首页位置 | JSON 字段 |
+| --- | --- |
+| 顶部导航文字与顺序 | `site.nav[].label` |
+| Header 站点名 + 小字副标题 | `site.title` / `site.tagline` |
+| Hero 大标题 | `site.title`（按空格拆成多行显示） |
+| Hero 副标题 | `site.tagline` |
+| Hero 自我介绍段落（留空则不显示） | `site.intro` |
+| Hero 右侧按钮（itch.io / LinkedIn…） | `site.contact.links[]` |
+| 浏览器标签页标题 | `site.title` + `site.tagline` |
+| 「关于我」标题 / 头像 / 简介 / 教育经历 / 技能 / 下一部作品 | `site.about.title` / `.portrait` / `.summary` / `.education[]` / `.skills[]` / `.nextWork` |
+| 作品卡片：作品名 / 副标题 / 年份 / 简介 / 分类标签 | 每个作品的 `title` / `subtitle` / `year` / `summary` / `category` |
+| 筛选栏有哪些项、文本是什么 | 各作品的 `category`（顺序由 `site.categoryOrder` 决定） |
+| 页脚标语与链接 | `site.footer` / `site.contact.email` / `site.contact.links[]` |
+
+**剩下少量「界面固定字样」写在代码里**（行号可能随代码变动，按关键字搜索即可）：
+
+| 位置 | 文字 | 文件:行 |
+| --- | --- | --- |
+| Hero 上方小标 | Game Portfolio | `src/pages/HomePage.jsx:31` |
+| Hero 主按钮 | 查看作品 ↓ | `src/pages/HomePage.jsx:42` |
+| Hero 三个统计项名称 | 作品数量 / 涉及领域 / 年份跨度 | `src/pages/HomePage.jsx:18-20` |
+| 作品区块小标 / 标题 / 说明 | Selected Works / 作品列表 / 点击任意作品… | `src/pages/HomePage.jsx:162-166` |
+| 「关于我」区块小标 | About & Contact | `src/pages/HomePage.jsx:83` |
+| 关于我里的三个小标题与说明 | 教育经历 / 技能 / 联系我 / 欢迎就合作… | `src/pages/HomePage.jsx:101,112,125,126` |
+| 卡片徽标与底部提示 | 精选 / 查看作品详情 → | `src/components/ProjectCard.jsx:20,39` |
+| 导航右侧按钮、页脚右下标语 | 联系我 / 纯静态站点… | `src/components/Header.jsx:78`、`src/components/Footer.jsx:28` |
+
+改 `.jsx` 里的文字在 `npm run dev` 下同样即时生效（热更新）；线上则需要重新 `npm run build` 后再上传。若希望这些界面字样也统一搬进 JSON（例如放到 `site.ui`），说一声即可。
+
 ### 改完先跑一次自检
 
 ```bash
