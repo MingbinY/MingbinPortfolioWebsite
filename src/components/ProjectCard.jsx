@@ -29,11 +29,10 @@ export default function ProjectCard({ project, index }) {
         {project.subtitle ? <p className="project-card__subtitle">{project.subtitle}</p> : null}
         {project.summary ? <p className="project-card__summary">{project.summary}</p> : null}
 
-        {project.tags.length ? (
+        {/* 列表里只显示一个分类标签；没有 category 的作品回落到第一个标签 */}
+        {project.category || project.tags[0] ? (
           <ul className="tag-list">
-            {project.tags.slice(0, 4).map((tag) => (
-              <li key={tag}>{tag}</li>
-            ))}
+            <li>{project.category || project.tags[0]}</li>
           </ul>
         ) : null}
 

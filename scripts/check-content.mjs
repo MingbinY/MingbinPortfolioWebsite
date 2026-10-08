@@ -104,6 +104,11 @@ async function main() {
     if (!project.description) warnings.push(`${label}：没有 description，详情页介绍区会是空的`)
     if (project.highlights != null && !Array.isArray(project.highlights)) warnings.push(`${label}：highlights 应该是数组`)
     if (project.tags != null && !Array.isArray(project.tags)) warnings.push(`${label}：tags 应该是数组`)
+    if (project.category != null && typeof project.category !== 'string') {
+      warnings.push(`${label}：category 应该是字符串（首页筛选用）`)
+    } else if (!project.category) {
+      infos.push(`${label}：没有 category，首页分类筛选里只会出现在「全部」下`)
+    }
     if (project.demo && !project.demo.url) warnings.push(`${label}：demo 有值但缺少 url，详情页会显示「Demo 暂未公开」`)
     for (const link of [project.demo, ...(Array.isArray(project.links) ? project.links : [])].filter(Boolean)) {
       if (link.url && !/^(https?:)?\/\//i.test(link.url) && !link.url.startsWith('mailto:')) {

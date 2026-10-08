@@ -101,6 +101,7 @@ export function normalizeProject(raw, index) {
     year: raw?.year != null ? String(raw.year) : '',
     role: raw?.role || '',
     platforms: toArray(raw?.platforms ?? raw?.platform).map(String),
+    category: raw?.category ? String(raw.category) : '',
     tags: toArray(raw?.tags).map(String),
     tools: toArray(raw?.tools).map(String),
     accent: raw?.accent || '',
