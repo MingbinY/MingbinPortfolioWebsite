@@ -21,7 +21,7 @@
     "categoryOrder": ["第一人称", "第三人称", "2D", "桌游"],
     "about": {
       "title": "关于我",
-      "portrait": "images/about/portrait.webp",
+      "portrait": "images/about/portrait.jpg",
       "summary": "我是 Mingbin Yang，一名热爱各种类型游戏（FPS、MOBA、TPS……）的游戏设计与开发者。我很喜欢尝试新工具、新技术，也享受把一个想法快速做成能上手试玩的原型。希望你喜欢我的作品！",
       "education": [
         "东北大学（Northeastern University）—— 游戏科学与设计硕士（MS in Game Science and Design）",
