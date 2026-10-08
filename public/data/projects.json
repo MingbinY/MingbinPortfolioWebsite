@@ -12,7 +12,7 @@
   "site": {
     "title": "MINGBIN YANG",
     "tagline": "游戏开发与创新 · Game Development and Innovation",
-    "intro": "你好，欢迎来到我的作品集（Game and Dreams）。我是 Mingbin Yang，目前就读于东北大学（Northeastern University）游戏科学与设计硕士项目（MS in Game Science and Design）；本科毕业于罗格斯大学（Rutgers University, New Brunswick），主修信息技术与信息学（游戏制作与创新方向）。玩游戏时我常会冒出各种新点子，也想把它们真正做出来、分享给别人，于是开始学习游戏开发与游戏设计。下面是我近几年的作品，点进去可以看到图片、介绍与 Demo。",
+    "intro": "你好，欢迎来到我的作品集（Game and Dreams）。我是 Mingbin Yang，教育背景是东北大学（Northeastern University）游戏科学与设计硕士（MS in Game Science and Design），以及罗格斯大学（Rutgers University, New Brunswick）信息技术与信息学学士（游戏制作与创新方向）。玩游戏时我常会冒出各种新点子，也想把它们真正做出来、分享给别人，于是开始学习游戏开发与游戏设计。下面是我近几年的作品，点进去可以看到图片、介绍与 Demo。",
     "nav": [
       { "label": "首页", "to": "/" },
       { "label": "作品", "to": "/", "scrollTo": "projects" },
@@ -23,7 +23,7 @@
       "portrait": "images/about/portrait.webp",
       "summary": "我是 Mingbin Yang，一名热爱各种类型游戏（FPS、MOBA、TPS……）的游戏设计与开发者。我很喜欢尝试新工具、新技术，也享受把一个想法快速做成能上手试玩的原型。希望你喜欢我的作品！",
       "education": [
-        "东北大学（Northeastern University）—— 游戏科学与设计硕士（MS in Game Science and Design），在读",
+        "东北大学（Northeastern University）—— 游戏科学与设计硕士（MS in Game Science and Design）",
         "罗格斯大学（Rutgers University, New Brunswick）—— 信息技术与信息学学士，游戏制作与创新方向"
       ],
       "skills": [
