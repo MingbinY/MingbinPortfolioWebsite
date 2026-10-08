@@ -311,7 +311,24 @@ push 到 `main` 且 `docs/**` 有变化时，自动把 `docs/` 同步到 COS 根
 ```
 
 > 如果改为「CI 自己构建、仓库不提交产物」：把工作流里被注释的 Node 安装 + `npm ci && npm run build` 打开，
-> 上传路径保持 `./docs/`（或在 `vite.config.js` 里改回 `dist/` 后同步改成本路径），并停止提交生成物。
+> 上传路径保持 `./docs/`（或在 `vite.config.js` 里改回 `dist/` 后改为本路径），并停止提交生成物。
+
+#### 本次实际部署记录（2026-10-08）
+
+| 项 | 值 |
+| --- | --- |
+| 存储桶 | `697f-static-portfolio-1-d7gnhlh7v5c3e580c-1313536934`（ap-singapore，账号里唯一配置了静态网站的桶） |
+| 上传方式 | `python _tools/cos_upload.py --bucket <桶名> --region ap-singapore`（官方 cos-python-sdk-v5，28 个文件 / 6.32MB） |
+| 桶权限 | 由脚本 `_tools/cos_make_public.py` 设为**公有读私有写**（原本是私有，匿名访问会 403） |
+| 静态网站 | 索引文档 `index.html`，错误文档 `index.html` |
+| 访问地址 | `https://<桶名>.cos-website.ap-singapore.myqcloud.com/` |
+
+> ⚠️ **该桶开启了「强制下载」**（响应头 `Content-Disposition: attachment` + `x-cos-force-download: true`），
+> 直接用 COS 域名在浏览器打开会变成**下载 index.html** 而不是渲染页面；对象级 `Content-Disposition: inline`
+> 覆盖不了桶级设置，SDK 也没有对应开关。解决办法（任选其一）：
+> ① COS 控制台 → 该桶 → 关闭「强制下载」；② **推荐**：绑定自定义域名（如 `mingbinportfolio.com`，
+> 新加坡地域无需备案，可配免费证书 + CDN，且不受强制下载影响）；③ 用云开发 CloudBase 静态托管自带的访问域名
+> （这个桶正是 CloudBase 静态托管环境创建的）。
 >
 > 另外，若你用的其实是**表单式部署**（腾讯云开发 CloudBase 静态托管 / CODING 静态网站 / Vercel、Netlify 等），
 > 字段这样填：
