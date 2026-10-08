@@ -245,6 +245,26 @@ npm run build      # 产物输出到 docs/（vite.config.js 里 build.outDir 指
 `docs/` 是**纯静态产物**，可以直接上传到任意静态托管（GitHub Pages / Netlify / Vercel / 对象存储 / Nginx）。
 因为用了 HashRouter + 相对路径（`base: './'`），**不需要配置 404 重写，也不受子目录影响**。
 
+### Cloudflare Pages（推荐，填写项最少）
+
+在 Cloudflare 控制台 **Workers & Pages → Create → Pages → Connect to Git** 选中本仓库后，
+「Set up your application」一屏这样填：
+
+| 字段 | 填什么 | 说明 |
+| --- | --- | --- |
+| Project name | 例如 `mingbin-portfolio` | 决定默认域名 `https://<名字>.pages.dev` |
+| Production branch | `main` | |
+| Framework preset | **React (Vite)**（或 Vite） | 预设会自动填 `npm run build` + `dist`，**下面那栏必须手动改** |
+| Build command | `npm run build` | 若日志报找不到 vite，改成 `npm ci && npm run build` |
+| **Build output directory** | **`docs`** | ⚠️ 不能留 `dist`：本项目的 `vite.config.js` 里 `outDir: 'docs'`，留 dist 会报「目录不存在」 |
+| Root directory（Advanced） | 留空 | 仓库根目录就是项目根目录 |
+| Environment variables | `NODE_VERSION` = `22` | Vite 8 需要 Node ≥ 20.19 / ≥ 22.12；仓库里已放 `.nvmrc`（内容 `22`），双保险 |
+
+- 用 HashRouter + 相对路径，**不需要** `_redirects`、`_headers` 或任何 404 规则
+- 想「不构建、直接发布仓库里已提交的产物」也可以：Build command 填 `exit 0`，输出目录仍是 `docs`，构建耗时最短
+- 绑定域名：项目 → **Custom domains → Set up a domain**，填 `mingbinportfolio.com`；域名 NS 在 Cloudflare 时一键完成，否则按提示加 CNAME
+- 仓库根目录那个 `CNAME` 文件是给 GitHub Pages 用的，Cloudflare 不读它，留着无害；但**同一个域名不要同时挂在 GitHub Pages 和 Cloudflare Pages 上**
+
 ### GitHub Pages（无需 CI，直接发布仓库里的 docs/）
 
 产物目录之所以叫 `docs/` 而不是 `dist/`，就是因为 GitHub Pages 的「Deploy from a branch」只允许选
