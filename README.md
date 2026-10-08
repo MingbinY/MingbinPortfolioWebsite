@@ -308,8 +308,22 @@ push 到 `main` 且 `docs/**` 有变化时，自动把 `docs/` 同步到 COS 根
 > 如果改为「CI 自己构建、仓库不提交产物」：把工作流里被注释的 Node 安装 + `npm ci && npm run build` 打开，
 > 上传路径保持 `./docs/`（或在 `vite.config.js` 里改回 `dist/` 后同步改成本路径），并停止提交生成物。
 >
-> 另外，若你用的其实是**腾讯云开发 CloudBase 静态托管**的「GitHub 仓库」部署表单，字段这样填：
-> 代码仓库 = `MingbinY/MingbinPortfolioWebsite`，分支 = `main`，构建命令 = `npm run build`，发布目录 = `docs`，Node 版本 = 22。
+> 另外，若你用的其实是**表单式部署**（腾讯云开发 CloudBase 静态托管 / CODING 静态网站 / Vercel、Netlify 等），
+> 字段这样填：
+>
+> | 表单字段 | 填什么 | 说明 |
+> | --- | --- | --- |
+> | 代码仓库 / 分支 | `MingbinY/MingbinPortfolioWebsite` · `main` | |
+> | 构建命令 | `npm ci && npm run build` | 想让平台自己构建就填这个；仓库里已有产物、不想构建可留空 |
+> | 构建产物目录 / 发布目录 | `docs` | 对应 `vite.config.js` 的 `build.outDir`；写成 `docs` 或 `/docs` 均可 |
+> | **部署路径 / 目标路径 / 部署到** | **`/`**（根目录） | 产物内部用的是相对路径，放根目录最标准 |
+> | Node 版本 | `22` | 仅构建时需要 |
+> | 环境变量 | 不需要 | |
+>
+> 注意：**别把「部署路径」也填成 `docs`**，否则线上会变成 `/docs/index.html`（相对引用仍能跑，但地址很别扭）。
+> 如果这个托管空间里还要放别的站点、必须放子目录，可填 `/portfolio` 之类前缀，然后访问
+> `https://<域名>/portfolio/index.html`（HashRouter 不受影响）。
+> 验证是否部署对：访问 `https://<域名>/data/projects.json` 能返回 JSON 就说明路径正确。
 
 ### 只改文案 / 换图时
 
