@@ -1,201 +1,376 @@
 {
   "_readme": [
-    "这是全站唯一的内容源：改作品 = 改这个文件，不需要动任何 .jsx / .js 代码。",
-    "改完保存后刷新页面即可（开发模式 npm run dev 时热更新；线上部署时重新上传这个 json 文件也不需要重新打包）。",
-    "新增作品最省事的两种方式：1) 复制下面 projects 数组里的一段，改字段；2) 运行 npm run new:project 按提示逐项填写。",
-    "字段说明：slug=网址标识(唯一,英文小写+短横线)；category=首页筛选分类(如 第一人称/第三人称/2D，留空则该作品只出现在「全部」里)；tags=详情页展示的标签数组；cover=列表页封面图；gallery=详情页横向滚动的多张图；summary=列表页一句话简介；description=详情页作品介绍(用空行分段)；demo=详情页 Demo 链接；accent=该作品的主题色。",
-    "site.title 是英文名（大标题用），site.nameZh 是中文名（会显示在大标题下方、导航左上角、页脚和浏览器标签页）。",
-    "site.about 是首页「关于我」区块的内容（portrait/summary/education/skills），删掉这个字段该区块就不显示。",
-    "图片路径统一相对于站点根目录，例如 images/covers/xxx.webp；也可以直接填完整 https 外链。",
-    "占位图可用 npm run gen:art 重新生成（已存在同名文件不会覆盖，加 --force 才覆盖）。",
-    "改完建议跑一次 npm run check 做内容自检。"
+    "这是全站唯一的内容源：改作品 = 改这个文件，不需要动任何 .jsx / .js 代码。 / Single source of truth for all content — edit this file, no code changes needed.",
+    "改完保存后刷新页面即可（开发模式 npm run dev 时热更新）。线上是 Cloudflare Pages 自动构建，push 后会重新构建并发布。 / Save and refresh in dev. In production Cloudflare Pages rebuilds on every push.",
+    "所有给人看的文本字段都写成 { \"zh\": \"…\", \"en\": \"…\" } 双语对象；两种语言缺一不可，缺了会回退到另一种语言。 / Every human-readable field is a { zh, en } pair; a missing language falls back to the other one.",
+    "语言无关的字段保持纯值：slug=网址标识(唯一,英文小写+短横线)；year=年份；cover/gallery=图片路径；demo.url/links.url=链接；accent=主题色；order=排序；featured=是否精选。 / Language-independent fields stay plain: slug, year, image paths, urls, accent, order, featured.",
+    "category 是首页筛选分类（如 第一人称/第三人称/2D/桌游）。筛选以中文值为稳定 key，所以中文改动会让该作品回到「全部」分类下，英文译文不影响筛选。 / category drives the homepage filter; its zh value is the stable key, the en value is only a label.",
+    "description 用空行分段（\\n\\n）。 / Separate description paragraphs with a blank line (\\n\\n).",
+    "site.title 是英文名（大标题用）；site.nameEn 是英文页面上显示的姓名，site.nameZh 是中文名。 / site.title is the big headline; nameEn/nameZh are the display names per language.",
+    "site.about 是首页「关于我」区块，删掉这个字段该区块（以及指向它的导航项）就不显示。 / Delete site.about to hide the About section and its nav item.",
+    "图片路径相对于站点根目录，例如 images/covers/xxx.webp；也可以填完整 https 外链。 / Image paths are site-root relative, or absolute https urls.",
+    "新增作品：复制 projects 数组里的一段改字段，或运行 npm run new:project。改完建议跑一次 npm run check 做内容自检。 / Copy an existing project or run npm run new:project, then npm run check."
   ],
   "site": {
     "title": "MINGBIN YANG",
     "nameZh": "杨铭彬",
-    "tagline": "游戏开发与创新 · Game Development and Innovation",
-    "intro": "你好，欢迎来到我的作品集（Game and Dreams）。我是杨铭彬（Mingbin Yang），教育背景是东北大学（Northeastern University）游戏科学与设计硕士（MS in Game Science and Design），以及罗格斯大学（Rutgers University, New Brunswick）信息技术与信息学学士（游戏制作与创新方向）。玩游戏时我常会冒出各种新点子，也想把它们真正做出来、分享给别人，于是开始学习游戏开发与游戏设计。下面是我近几年的作品，点进去可以看到图片、介绍与 Demo。",
+    "nameEn": "Mingbin Yang",
+    "tagline": {
+      "zh": "游戏开发与创新",
+      "en": "Game Development and Innovation"
+    },
+    "intro": {
+      "zh": "你好，欢迎来到我的作品集（Game and Dreams）。我是杨铭彬（Mingbin Yang），教育背景是东北大学（Northeastern University）游戏科学与设计硕士（MS in Game Science and Design），以及罗格斯大学（Rutgers University, New Brunswick）信息技术与信息学学士（游戏制作与创新方向）。玩游戏时我常会冒出各种新点子，也想把它们真正做出来、分享给别人，于是开始学习游戏开发与游戏设计。下面是我近几年的作品，点进去可以看到图片、介绍与 Demo。",
+      "en": "Hi, and welcome to my portfolio (Game and Dreams). I'm Mingbin Yang. I hold an MS in Game Science and Design from Northeastern University and a BS in Information Technology and Informatics, with a focus on game production and innovation, from Rutgers University, New Brunswick. Playing games constantly gives me new ideas, and I wanted to actually build and share them, so I started learning game development and game design. Below are the projects I've worked on in recent years — open any of them to see images, a write-up and a demo."
+    },
     "nav": [
-      { "label": "首页", "to": "/" },
-      { "label": "作品", "to": "/", "scrollTo": "projects" },
-      { "label": "关于", "to": "/", "scrollTo": "about" }
+      { "label": { "zh": "首页", "en": "Home" }, "to": "/" },
+      { "label": { "zh": "作品", "en": "Work" }, "to": "/", "scrollTo": "projects" },
+      { "label": { "zh": "关于", "en": "About" }, "to": "/", "scrollTo": "about" }
     ],
-    "categoryOrder": ["第一人称", "第三人称", "2D", "桌游"],
+    "categoryOrder": [
+      { "zh": "第一人称", "en": "First-person" },
+      { "zh": "第三人称", "en": "Third-person" },
+      { "zh": "2D", "en": "2D" },
+      { "zh": "桌游", "en": "Tabletop" }
+    ],
     "about": {
-      "title": "关于我",
+      "title": { "zh": "关于我", "en": "About me" },
       "portrait": "images/about/portrait.jpg",
-      "summary": "我是杨铭彬（Mingbin Yang），一名热爱各种类型游戏（FPS、MOBA、TPS……）的游戏设计与开发者。我很喜欢尝试新工具、新技术，也享受把一个想法快速做成能上手试玩的原型。希望你喜欢我的作品！",
+      "summary": {
+        "zh": "我是杨铭彬（Mingbin Yang），一名热爱各种类型游戏（FPS、MOBA、TPS……）的游戏设计与开发者。我很喜欢尝试新工具、新技术，也享受把一个想法快速做成能上手试玩的原型。希望你喜欢我的作品！",
+        "en": "I'm Mingbin Yang, a game designer and developer who plays just about everything (FPS, MOBA, TPS…). I love picking up new tools and technologies, and I enjoy turning an idea into a playable prototype fast. I hope you like my work!"
+      },
       "education": [
-        "东北大学（Northeastern University）—— 游戏科学与设计硕士（MS in Game Science and Design）",
-        "罗格斯大学（Rutgers University, New Brunswick）—— 信息技术与信息学学士，游戏制作与创新方向"
+        {
+          "zh": "东北大学（Northeastern University）—— 游戏科学与设计硕士（MS in Game Science and Design）",
+          "en": "Northeastern University — MS in Game Science and Design"
+        },
+        {
+          "zh": "罗格斯大学（Rutgers University, New Brunswick）—— 信息技术与信息学学士，游戏制作与创新方向",
+          "en": "Rutgers University, New Brunswick — BS in Information Technology and Informatics, Game Production and Innovation"
+        }
       ],
       "skills": [
-        { "label": "游戏开发", "value": "Unity 引擎、Unreal Engine 5（UE5）" },
-        { "label": "编程语言", "value": "C#、Python、Java、TypeScript" },
-        { "label": "其他", "value": "Adobe XD、视频剪辑" }
+        {
+          "label": { "zh": "游戏开发", "en": "Game development" },
+          "value": { "zh": "Unity 引擎、Unreal Engine 5（UE5）", "en": "Unity, Unreal Engine 5 (UE5)" }
+        },
+        {
+          "label": { "zh": "编程语言", "en": "Languages" },
+          "value": { "zh": "C#、Python、Java、TypeScript", "en": "C#, Python, Java, TypeScript" }
+        },
+        {
+          "label": { "zh": "其他", "en": "Other" },
+          "value": { "zh": "Adobe XD、视频剪辑", "en": "Adobe XD, video editing" }
+        }
       ]
     },
     "contact": {
       "email": "mingbin.yang@outlook.com",
       "links": [
-        { "label": "itch.io 主页", "url": "https://mingbyang.itch.io/" },
-        { "label": "LinkedIn", "url": "https://www.linkedin.com/in/mingbinyang/" }
+        { "label": { "zh": "itch.io 主页", "en": "itch.io" }, "url": "https://mingbyang.itch.io/" },
+        { "label": { "zh": "LinkedIn", "en": "LinkedIn" }, "url": "https://www.linkedin.com/in/mingbinyang/" }
       ]
     },
-    "footer": "Game and Dreams · 欢迎交流合作，作品与图片版权归作者所有"
+    "footer": {
+      "zh": "Game and Dreams · 欢迎交流合作，作品与图片版权归作者所有",
+      "en": "Game and Dreams · Open to collaboration. All projects and images © the author."
+    }
   },
   "projects": [
     {
       "slug": "dark-dreams-of-zhijiang",
-      "title": "枝江黯梦",
-      "subtitle": "Dark Dreams of Zhijiang · Isometric 双人同屏解谜",
+      "title": { "zh": "枝江黯梦", "en": "Dark Dreams of Zhijiang" },
+      "subtitle": {
+        "zh": "Isometric 双人同屏解谜",
+        "en": "Isometric two-player couch co-op puzzle"
+      },
       "year": "2022",
-      "role": "主设计 / 主程序（三人团队）",
+      "role": { "zh": "主设计 / 主程序（三人团队）", "en": "Lead design / lead programmer (team of three)" },
       "platforms": ["PC (Windows)"],
       "tools": ["Unity", "C#"],
-      "category": "第三人称",
-      "tags": ["A-SOUL 二创", "双人同屏", "解谜", "获奖作品"],
+      "category": { "zh": "第三人称", "en": "Third-person" },
+      "tags": [
+        { "zh": "A-SOUL 二创", "en": "A-SOUL fan work" },
+        { "zh": "双人同屏", "en": "Couch co-op" },
+        { "zh": "解谜", "en": "Puzzle" },
+        { "zh": "获奖作品", "en": "Award-winning" }
+      ],
       "accent": "#b45cff",
       "featured": true,
       "order": 1,
       "cover": "images/covers/dark-dreams-of-zhijiang.webp",
-      "summary": "以虚拟偶像组合 A-SOUL 为主题、使用 Unity 引擎开发的 Isometric 视角双人同屏闯关解谜游戏；获得稀土掘金 2022 编程挑战赛游戏赛道一等奖。",
-      "description": "《枝江黯梦》（Dark Dreams of Zhijiang）是为「稀土掘金 2022 编程挑战赛」创作的作品，比赛主题围绕中国虚拟偶像组合 A-SOUL，最终拿到该赛道的第一名。游戏使用 Unity 引擎开发，采用 Isometric（等距）视角，需要两名玩家在同一台电脑上同屏协作。\n\n剧情：A-SOUL 的五位女孩因为工作压力和难以解开的心结陷入沉睡，再也没有醒来。作为她们的忠实粉丝，你要进入她们的梦境，用你的爱与本领去解开梦里的心结，把阳光带进她们的黯梦，一路走到梦境最深处——醒来吧，我的宝贝！\n\n玩法：两位玩家需要互相配合，解开关卡中的谜题、把镜子搬到正确的位置，让「希望之光」照进噩梦的最深处，最后击败梦境尽头的 BOSS。\n\n设计动机：A-SOUL 的粉丝创造了一种外人很难理解的亚文化，这个游戏就是想把我们的梗与热爱分享给愿意了解它的人，表达我们喜欢她们的理由，把这份快乐传递给更多人。\n\n团队分工：策划 / 美术设计 / 文案 / 关卡设计 @乡乡乡乡乡乡乡乡乡长；场景 / TA / 程序 / UI 设计及 UI 动画 @汐鸣ひまわり；主程序 / 策划 / 主玩法设计与开发 @软貂。形象来源 @A-SOUL_Official，A-SOUL 形象版权归 A-SOUL 所有。",
+      "summary": {
+        "zh": "以虚拟偶像组合 A-SOUL 为主题、使用 Unity 引擎开发的 Isometric 视角双人同屏闯关解谜游戏；获得稀土掘金 2022 编程挑战赛游戏赛道一等奖。",
+        "en": "An isometric two-player couch co-op puzzle game built in Unity around the virtual idol group A-SOUL. It won first prize in the game track of the Juejin 2022 Programming Challenge."
+      },
+      "description": {
+        "zh": "《枝江黯梦》（Dark Dreams of Zhijiang）是为「稀土掘金 2022 编程挑战赛」创作的作品，比赛主题围绕中国虚拟偶像组合 A-SOUL，最终拿到该赛道的第一名。游戏使用 Unity 引擎开发，采用 Isometric（等距）视角，需要两名玩家在同一台电脑上同屏协作。\n\n剧情：A-SOUL 的五位女孩因为工作压力和难以解开的心结陷入沉睡，再也没有醒来。作为她们的忠实粉丝，你要进入她们的梦境，用你的爱与本领去解开梦里的心结，把阳光带进她们的黯梦，一路走到梦境最深处——醒来吧，我的宝贝！\n\n玩法：两位玩家需要互相配合，解开关卡中的谜题、把镜子搬到正确的位置，让「希望之光」照进噩梦的最深处，最后击败梦境尽头的 BOSS。\n\n设计动机：A-SOUL 的粉丝创造了一种外人很难理解的亚文化，这个游戏就是想把我们的梗与热爱分享给愿意了解它的人，表达我们喜欢她们的理由，把这份快乐传递给更多人。\n\n团队分工：策划 / 美术设计 / 文案 / 关卡设计 @乡乡乡乡乡乡乡乡乡长；场景 / TA / 程序 / UI 设计及 UI 动画 @汐鸣ひまわり；主程序 / 策划 / 主玩法设计与开发 @软貂。形象来源 @A-SOUL_Official，A-SOUL 形象版权归 A-SOUL 所有。",
+        "en": "Dark Dreams of Zhijiang was made for the Juejin 2022 Programming Challenge, whose theme centered on the Chinese virtual idol group A-SOUL. It took first place in the game track. Built in Unity with an isometric camera, it is designed for two players sharing one computer.\n\nStory: The five girls of A-SOUL have fallen into a sleep they cannot wake from, worn down by work and by feelings they could not resolve. As a devoted fan, you enter their dreams to untangle what troubles them, bring sunlight into their dark dreams and push all the way to the deepest layer — wake up, my darling!\n\nGameplay: The two players have to work together, solving the puzzles in each level and moving mirrors into the right positions so that the \"light of hope\" reaches the deepest part of the nightmare, then defeat the boss waiting at the end.\n\nWhy we made it: A-SOUL fans built a subculture that is hard for outsiders to read. This game is our attempt to share the memes and the affection behind it, to explain why we love them, and to pass that joy on to more people.\n\nTeam: Design / art direction / writing / level design — @乡乡乡乡乡乡乡乡乡长; environment / TA / programming / UI design and UI animation — @汐鸣ひまわり; lead programming / design / core gameplay design and implementation — @软貂. Character art from @A-SOUL_Official; A-SOUL character rights belong to A-SOUL."
+      },
       "highlights": [
-        "稀土掘金 2022 编程挑战赛游戏赛道一等奖",
-        "双人同屏协作解谜：搬动镜子，把「希望之光」照进梦境最深处",
-        "以 A-SOUL 粉丝亚文化为设计母题，让玩法与叙事互相绑定",
-        "团队三人协作，负责主设计与主程序"
+        {
+          "zh": "稀土掘金 2022 编程挑战赛游戏赛道一等奖",
+          "en": "First prize, game track — Juejin 2022 Programming Challenge"
+        },
+        {
+          "zh": "双人同屏协作解谜：搬动镜子，把「希望之光」照进梦境最深处",
+          "en": "Two-player couch co-op puzzling: move mirrors to drive the \"light of hope\" into the deepest dream layer"
+        },
+        {
+          "zh": "以 A-SOUL 粉丝亚文化为设计母题，让玩法与叙事互相绑定",
+          "en": "A-SOUL fan culture as the design motif, with gameplay and narrative bound together"
+        },
+        {
+          "zh": "团队三人协作，负责主设计与主程序",
+          "en": "Built with a three-person team; I owned lead design and lead programming"
+        }
       ],
-      "demo": { "label": "观看演示视频（B 站）", "url": "https://www.bilibili.com/video/BV1T5411d7Hp" },
+      "demo": {
+        "label": { "zh": "观看演示视频（B 站）", "en": "Watch the demo (Bilibili)" },
+        "url": "https://www.bilibili.com/video/BV1T5411d7Hp"
+      },
       "links": [
         {
-          "label": "掘金 2022 编程挑战赛作品页",
+          "label": { "zh": "掘金 2022 编程挑战赛作品页", "en": "Juejin 2022 Challenge entry page" },
           "url": "https://hackathon2022.juejin.cn/#/works/detail?unique=AJuapXoHCitYLTbe1rltvw"
         },
-        { "label": "A-SOUL 资料（Fandom）", "url": "https://virtualyoutuber.fandom.com/wiki/A-soul" }
+        {
+          "label": { "zh": "A-SOUL 资料（Fandom）", "en": "A-SOUL wiki (Fandom)" },
+          "url": "https://virtualyoutuber.fandom.com/wiki/A-soul"
+        }
       ],
       "gallery": [
-        { "src": "images/projects/dark-dreams-of-zhijiang/01.webp", "caption": "" },
-        { "src": "images/projects/dark-dreams-of-zhijiang/02.webp", "caption": "" },
-        { "src": "images/projects/dark-dreams-of-zhijiang/03.webp", "caption": "" },
-        { "src": "images/projects/dark-dreams-of-zhijiang/04.webp", "caption": "" },
-        { "src": "images/projects/dark-dreams-of-zhijiang/05.webp", "caption": "" }
+        { "src": "images/projects/dark-dreams-of-zhijiang/01.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/dark-dreams-of-zhijiang/02.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/dark-dreams-of-zhijiang/03.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/dark-dreams-of-zhijiang/04.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/dark-dreams-of-zhijiang/05.webp", "caption": { "zh": "", "en": "" } }
       ]
     },
     {
       "slug": "keyboard-warrior",
-      "title": "Keyboard Warrior",
-      "subtitle": "2D 平台跳跃 · 元游戏玩法",
+      "title": { "zh": "Keyboard Warrior", "en": "Keyboard Warrior" },
+      "subtitle": {
+        "zh": "2D 平台跳跃 · 元游戏玩法",
+        "en": "2D platformer · meta-gameplay"
+      },
       "year": "2023",
-      "role": "设计 / 开发",
+      "role": { "zh": "设计 / 开发", "en": "Design / development" },
       "platforms": ["PC"],
       "tools": [],
-      "category": "2D",
-      "tags": ["2D 平台跳跃", "元游戏", "创意玩法"],
+      "category": { "zh": "2D", "en": "2D" },
+      "tags": [
+        { "zh": "2D 平台跳跃", "en": "2D platformer" },
+        { "zh": "元游戏", "en": "Meta-game" },
+        { "zh": "创意玩法", "en": "Experimental mechanics" }
+      ],
       "accent": "#38e1c8",
       "featured": false,
       "order": 2,
       "cover": "images/covers/keyboard-warrior.webp",
-      "summary": "一款让玩家把「键盘按键本身」当作道具拖进游戏里使用的元游戏：按键一旦被用掉，对应的键就会暂时失效。",
-      "description": "Keyboard Warrior（键盘侠）是一款元游戏（meta-game）：玩家要把自己键盘上的按键「拖」到游戏里的方块和 Trigger 上为其附魔，以改变它们的【方向】属性；Trigger 会把对应的方向属性赋予玩家。被拖走的键位在收回之前会一直失效——你得用「牺牲输入」来换关卡里的通路。\n\n具体规则：附魔后 5 秒，或者附魔的 Trigger 被触发时，按键会自动收回；所以每一关都要先想清楚愿意放弃哪些键、什么时候把它们收回来。作者自己的评价是：沙雕又益智的烂梗大杂烩小游戏。\n\n其他信息：2023 年 12 月发布的课程小组作业（三人小组，没有专门美工），使用 Unity 引擎开发，并使用了 Corgi Engine 的素材；合作者 @Resonance1983。\n\nDemo 演示视频见页面底部的按钮。",
+      "summary": {
+        "zh": "一款让玩家把「键盘按键本身」当作道具拖进游戏里使用的元游戏：按键一旦被用掉，对应的键就会暂时失效。",
+        "en": "A meta-game where your own keyboard keys are the items: drag a key into the game to use it, and that physical key stops working until you take it back."
+      },
+      "description": {
+        "zh": "Keyboard Warrior（键盘侠）是一款元游戏（meta-game）：玩家要把自己键盘上的按键「拖」到游戏里的方块和 Trigger 上为其附魔，以改变它们的【方向】属性；Trigger 会把对应的方向属性赋予玩家。被拖走的键位在收回之前会一直失效——你得用「牺牲输入」来换关卡里的通路。\n\n具体规则：附魔后 5 秒，或者附魔的 Trigger 被触发时，按键会自动收回；所以每一关都要先想清楚愿意放弃哪些键、什么时候把它们收回来。作者自己的评价是：沙雕又益智的烂梗大杂烩小游戏。\n\n其他信息：2023 年 12 月发布的课程小组作业（三人小组，没有专门美工），使用 Unity 引擎开发，并使用了 Corgi Engine 的素材；合作者 @Resonance1983。\n\nDemo 演示视频见页面底部的按钮。",
+        "en": "Keyboard Warrior is a meta-game: you drag keys off your own keyboard and onto blocks and triggers in the game to enchant them, changing their direction attribute. Triggers then hand that direction to the player. A key you have dragged away stops working until you take it back — you trade away real input to open a path through the level.\n\nRules in detail: a key is returned automatically five seconds after enchanting, or as soon as the trigger it enchanted is fired. Every level therefore starts with a decision about which keys you are willing to give up and when you want them back. The author's own summary: a goofy little puzzle game that is a grab bag of bad jokes.\n\nOther notes: a December 2023 course assignment made by a team of three with no dedicated artist, built in Unity using assets from Corgi Engine; collaborator @Resonance1983.\n\nA demo video is linked at the bottom of this page."
+      },
       "highlights": [
-        "把键盘按键拖进游戏为方块与 Trigger 附魔，用掉的键位在收回前一直失效",
-        "「牺牲输入」的取舍设计：5 秒后或附魔目标被触发时按键自动收回",
-        "三人小组课程作业，使用 Unity + Corgi Engine 开发，2023 年 12 月发布"
+        {
+          "zh": "把键盘按键拖进游戏为方块与 Trigger 附魔，用掉的键位在收回前一直失效",
+          "en": "Drag real keyboard keys into the game to enchant blocks and triggers; a spent key stays dead until reclaimed"
+        },
+        {
+          "zh": "「牺牲输入」的取舍设计：5 秒后或附魔目标被触发时按键自动收回",
+          "en": "A deliberate \"sacrifice your input\" trade-off: keys return after five seconds or when the enchanted target fires"
+        },
+        {
+          "zh": "三人小组课程作业，使用 Unity + Corgi Engine 开发，2023 年 12 月发布",
+          "en": "A three-person course project built with Unity and Corgi Engine, released December 2023"
+        }
       ],
-      "demo": { "label": "观看 Demo 视频（B 站）", "url": "https://www.bilibili.com/video/BV11g4y1f7ku" },
+      "demo": {
+        "label": { "zh": "观看 Demo 视频（B 站）", "en": "Watch the demo (Bilibili)" },
+        "url": "https://www.bilibili.com/video/BV11g4y1f7ku"
+      },
       "links": [],
       "gallery": [
-        { "src": "images/projects/keyboard-warrior/01.webp", "caption": "" },
-        { "src": "images/projects/keyboard-warrior/02.webp", "caption": "" },
-        { "src": "images/projects/keyboard-warrior/03.webp", "caption": "" }
+        { "src": "images/projects/keyboard-warrior/01.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/keyboard-warrior/02.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/keyboard-warrior/03.webp", "caption": { "zh": "", "en": "" } }
       ]
     },
     {
       "slug": "purge-the-village",
-      "title": "This Entire Village Must Be Purged",
-      "subtitle": "第一人称射击 · 潜行与抉择",
+      "title": {
+        "zh": "This Entire Village Must Be Purged",
+        "en": "This Entire Village Must Be Purged"
+      },
+      "subtitle": {
+        "zh": "第一人称射击 · 潜行与抉择",
+        "en": "First-person shooter · stealth and moral choice"
+      },
       "year": "2022",
-      "role": "主程序 / 设计（与 Tommy Lin 合作）",
+      "role": {
+        "zh": "主程序 / 设计（与 Tommy Lin 合作）",
+        "en": "Lead programmer / design (with Tommy Lin)"
+      },
       "platforms": ["PC (Windows)"],
       "tools": ["Unity", "C#"],
-      "category": "第一人称",
-      "tags": ["第一人称射击", "潜行", "叙事抉择"],
+      "category": { "zh": "第一人称", "en": "First-person" },
+      "tags": [
+        { "zh": "第一人称射击", "en": "First-person shooter" },
+        { "zh": "潜行", "en": "Stealth" },
+        { "zh": "叙事抉择", "en": "Narrative choice" }
+      ],
       "accent": "#ff5c39",
       "featured": false,
       "order": 3,
       "cover": "images/covers/purge-the-village.webp",
-      "summary": "潜入沙漠深处被恐怖分子占据的小村，阻止生化武器实验：是当场击毙尚未变异的平民，还是等他们变成丧尸再动手——两条路会通向不同的难度与结局。",
-      "description": "《必须肃清这座村庄》（This Entire Village Must Be Purged）是一款使用 Unity 引擎开发的第一人称射击游戏，由我与 Tommy Lin 合作完成。玩家扮演特种部队士兵，潜入位于沙漠中的小村庄，阻止恐怖分子扩散生化武器、拯救世界。\n\n游戏的核心在于玩家一路上必须做出的抉择：任务要求杀光村里所有被生化武器感染的活物，而村民已经全部感染、无药可救。你可以选择「快且不人道」——直接击毙还没变异的平民；也可以选择等待他们先变成丧尸再动手，代价是难度明显提高，但处理方式更人道。这些选择会同时影响战斗难度与最终结局。\n\nDemo 提供中文演示视频，点下面的按钮即可观看。",
+      "summary": {
+        "zh": "潜入沙漠深处被恐怖分子占据的小村，阻止生化武器实验：是当场击毙尚未变异的平民，还是等他们变成丧尸再动手——两条路会通向不同的难度与结局。",
+        "en": "Infiltrate a desert village held by terrorists and stop their bioweapon experiments: shoot the villagers before they turn, or wait until they are zombies. The two paths lead to different difficulty and different endings."
+      },
+      "description": {
+        "zh": "《必须肃清这座村庄》（This Entire Village Must Be Purged）是一款使用 Unity 引擎开发的第一人称射击游戏，由我与 Tommy Lin 合作完成。玩家扮演特种部队士兵，潜入位于沙漠中的小村庄，阻止恐怖分子扩散生化武器、拯救世界。\n\n游戏的核心在于玩家一路上必须做出的抉择：任务要求杀光村里所有被生化武器感染的活物，而村民已经全部感染、无药可救。你可以选择「快且不人道」——直接击毙还没变异的平民；也可以选择等待他们先变成丧尸再动手，代价是难度明显提高，但处理方式更人道。这些选择会同时影响战斗难度与最终结局。\n\nDemo 提供中文演示视频，点下面的按钮即可观看。",
+        "en": "This Entire Village Must Be Purged is a first-person shooter built in Unity, made together with Tommy Lin. You play a special forces soldier sent into a small desert village to stop terrorists from spreading a bioweapon and, with it, to save the world.\n\nThe heart of the game is the choice you have to make along the way. Your orders are to kill every living thing in the village infected by the bioweapon — and every villager is already infected beyond saving. You can take the fast, inhumane route and shoot civilians before they turn, or wait until they become zombies first: noticeably harder, but more humane. Those choices shape both the combat difficulty and the ending you reach.\n\nThe demo video is in Chinese — use the button below to watch it."
+      },
       "highlights": [
-        "「快且不人道」与「人道但更难」的二选一设计，直接改变难度与结局",
-        "与 Tommy Lin 合作，使用 Unity 引擎完成开发",
-        "提供中文 Demo 演示视频"
+        {
+          "zh": "「快且不人道」与「人道但更难」的二选一设计，直接改变难度与结局",
+          "en": "A deliberate \"fast and inhumane\" vs \"humane but harder\" choice that directly changes difficulty and ending"
+        },
+        {
+          "zh": "与 Tommy Lin 合作，使用 Unity 引擎完成开发",
+          "en": "Developed in Unity together with Tommy Lin"
+        },
+        {
+          "zh": "提供中文 Demo 演示视频",
+          "en": "Includes a Chinese-language demo video"
+        }
       ],
-      "demo": { "label": "观看中文 Demo（B 站）", "url": "https://www.bilibili.com/video/BV1jU4y1B7xQ" },
+      "demo": {
+        "label": { "zh": "观看中文 Demo（B 站）", "en": "Watch the demo, Chinese audio (Bilibili)" },
+        "url": "https://www.bilibili.com/video/BV1jU4y1B7xQ"
+      },
       "links": [],
       "gallery": [
-        { "src": "images/projects/purge-the-village/01.webp", "caption": "" },
-        { "src": "images/projects/purge-the-village/02.webp", "caption": "" },
-        { "src": "images/projects/purge-the-village/03.webp", "caption": "" },
-        { "src": "images/projects/purge-the-village/04.webp", "caption": "" }
+        { "src": "images/projects/purge-the-village/01.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/purge-the-village/02.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/purge-the-village/03.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/purge-the-village/04.webp", "caption": { "zh": "", "en": "" } }
       ]
     },
     {
       "slug": "ava-revenge",
-      "title": "Ava's Revenge（原型）",
-      "subtitle": "俯视角射击 × 塔防 · WebGL 可玩原型",
+      "title": { "zh": "Ava's Revenge（原型）", "en": "Ava's Revenge (prototype)" },
+      "subtitle": {
+        "zh": "俯视角射击 × 塔防 · WebGL 可玩原型",
+        "en": "Top-down shooter × tower defense · playable WebGL prototype"
+      },
       "year": "2022",
-      "role": "设计 / 程序（个人项目）",
+      "role": { "zh": "设计 / 程序（个人项目）", "en": "Design / programming (solo project)" },
       "platforms": ["PC", "WebGL"],
       "tools": ["Unity", "C#"],
-      "category": "第三人称",
-      "tags": ["俯视角射击", "塔防", "WebGL"],
+      "category": { "zh": "第三人称", "en": "Third-person" },
+      "tags": [
+        { "zh": "俯视角射击", "en": "Top-down shooter" },
+        { "zh": "塔防", "en": "Tower defense" },
+        { "zh": "WebGL", "en": "WebGL" }
+      ],
       "accent": "#4ea8ff",
       "featured": false,
       "order": 4,
       "cover": "images/covers/ava-revenge.webp",
-      "summary": "把俯视角射击与塔防结合起来的核心循环原型：建造炮塔撑过一波波随机刷新的敌人，每撑过一波都能获得新武器。",
-      "description": "Ava's Revenge 是罗格斯大学游戏设计课程的个人项目，从 Unity Learn 的 Roll-A-Ball 教程项目打磨而来，用来验证「俯视角射击 + 塔防」这套组合玩法玩起来会是什么感觉。\n\n游戏是波次制的俯视角射击：玩家需要建造炮塔，抵挡地图上随机刷新的敌人；每撑过一波会获得新武器作为奖励，击杀敌人赚到的钱则用来继续建塔。\n\n除了玩法，还有一段没有在 Demo 里呈现的背景故事：球之国的战士 Ava 受「球王」委托守卫王国，她一路战斗到胶囊国，必须坚持到太阳升起、等到援军抵达——为了球的荣耀，活下去！\n\n原型可以直接在网页里试玩。",
+      "summary": {
+        "zh": "把俯视角射击与塔防结合起来的核心循环原型：建造炮塔撑过一波波随机刷新的敌人，每撑过一波都能获得新武器。",
+        "en": "A core-loop prototype blending top-down shooting with tower defense: build turrets to survive waves of randomly spawned enemies, and earn a new weapon for every wave you clear."
+      },
+      "description": {
+        "zh": "Ava's Revenge 是罗格斯大学游戏设计课程的个人项目，从 Unity Learn 的 Roll-A-Ball 教程项目打磨而来，用来验证「俯视角射击 + 塔防」这套组合玩法玩起来会是什么感觉。\n\n游戏是波次制的俯视角射击：玩家需要建造炮塔，抵挡地图上随机刷新的敌人；每撑过一波会获得新武器作为奖励，击杀敌人赚到的钱则用来继续建塔。\n\n除了玩法，还有一段没有在 Demo 里呈现的背景故事：球之国的战士 Ava 受「球王」委托守卫王国，她一路战斗到胶囊国，必须坚持到太阳升起、等到援军抵达——为了球的荣耀，活下去！\n\n原型可以直接在网页里试玩。",
+        "en": "Ava's Revenge is a solo project for a game design course at Rutgers University. It started from Unity Learn's Roll-A-Ball tutorial and was built to test how a top-down shooter fused with tower defense would actually feel to play.\n\nIt is a wave-based top-down shooter: you build turrets to hold off enemies that spawn at random points on the map, earn a new weapon each time you survive a wave, and spend the money from kills on more turrets.\n\nThere is also a backstory that never made it into the demo: Ava, a warrior of the Ball Kingdom, is charged by the Ball King with defending the realm. She fights her way to the Capsule Kingdom and has to hold out until sunrise, when reinforcements arrive. For the glory of the ball — stay alive!\n\nThe prototype is playable right in the browser."
+      },
       "highlights": [
-        "俯视角射击 + 塔防的玩法组合原型",
-        "波次结束奖励新武器，击杀收益用于建造炮塔",
-        "由 Unity Learn 的 Roll-A-Ball 项目打磨而来，可直接在网页试玩"
+        {
+          "zh": "俯视角射击 + 塔防的玩法组合原型",
+          "en": "A prototype combining top-down shooting with tower defense"
+        },
+        {
+          "zh": "波次结束奖励新武器，击杀收益用于建造炮塔",
+          "en": "New weapon awarded per completed wave; kill income spent on turrets"
+        },
+        {
+          "zh": "由 Unity Learn 的 Roll-A-Ball 项目打磨而来，可直接在网页试玩",
+          "en": "Grown out of Unity Learn's Roll-A-Ball project, playable directly in the browser"
+        }
       ],
-      "demo": { "label": "在线试玩原型（WebGL）", "url": "https://mingbiny.github.io/ProjectBalls/WebGL_Build/" },
+      "demo": {
+        "label": { "zh": "在线试玩原型（WebGL）", "en": "Play the prototype (WebGL)" },
+        "url": "https://mingbiny.github.io/ProjectBalls/WebGL_Build/"
+      },
       "links": [],
       "gallery": [
-        { "src": "images/projects/ava-revenge/01.webp", "caption": "" },
-        { "src": "images/projects/ava-revenge/02.webp", "caption": "" }
+        { "src": "images/projects/ava-revenge/01.webp", "caption": { "zh": "", "en": "" } },
+        { "src": "images/projects/ava-revenge/02.webp", "caption": { "zh": "", "en": "" } }
       ]
     },
     {
       "slug": "delve-into-the-dungeon",
-      "title": "Delve Into The Dungeon",
-      "subtitle": "四人同桌 Roguelike 桌游 · 纸面原型",
+      "title": { "zh": "Delve Into The Dungeon", "en": "Delve Into The Dungeon" },
+      "subtitle": {
+        "zh": "四人同桌 Roguelike 桌游 · 纸面原型",
+        "en": "Four-player tabletop roguelike · paper prototype"
+      },
       "year": "2022",
-      "role": "设计 / 开发（与 Casey Viezel 合作）",
+      "role": {
+        "zh": "设计 / 开发（与 Casey Viezel 合作）",
+        "en": "Design / development (with Casey Viezel)"
+      },
       "platforms": ["桌游（实体）"],
       "tools": [],
-      "category": "桌游",
-      "tags": ["桌游", "Roguelike", "四人合作"],
+      "category": { "zh": "桌游", "en": "Tabletop" },
+      "tags": [
+        { "zh": "桌游", "en": "Tabletop" },
+        { "zh": "Roguelike", "en": "Roguelike" },
+        { "zh": "四人合作", "en": "Four-player co-op" }
+      ],
       "accent": "#ffc247",
       "featured": false,
       "order": 5,
       "cover": "images/covers/delve-into-the-dungeon.webp",
-      "summary": "为「游戏设计方法论」课程制作的四人 Roguelike 桌游原型：在未知节点之间做团队决策、一路战斗到地下城尽头的 BOSS。",
-      "description": "Delve Into The Dungeon 是罗格斯大学「游戏设计方法论」课程的课程作业，与 Casey Viezel 合作完成。它相当于一个桌面版的《杀戮尖塔》（Slay the Spire），并做了大量改造让它适合在餐桌上玩：四名玩家共同决策、一起打到最后的地下城 BOSS。\n\n每位玩家都有一张属性和技能各不相同的角色卡，探索途中做的每个决定都会触发随机生成的事件，因此每一局的路线与遭遇都不一样，重开一局就是全新的地牢。\n\n实体原型已经做过打印与试玩测试。",
+      "summary": {
+        "zh": "为「游戏设计方法论」课程制作的四人 Roguelike 桌游原型：在未知节点之间做团队决策、一路战斗到地下城尽头的 BOSS。",
+        "en": "A four-player roguelike tabletop prototype made for a Game Design Methodology course: make group decisions between unknown nodes and fight your way to the boss at the end of the dungeon."
+      },
+      "description": {
+        "zh": "Delve Into The Dungeon 是罗格斯大学「游戏设计方法论」课程的课程作业，与 Casey Viezel 合作完成。它相当于一个桌面版的《杀戮尖塔》（Slay the Spire），并做了大量改造让它适合在餐桌上玩：四名玩家共同决策、一起打到最后的地下城 BOSS。\n\n每位玩家都有一张属性和技能各不相同的角色卡，探索途中做的每个决定都会触发随机生成的事件，因此每一局的路线与遭遇都不一样，重开一局就是全新的地牢。\n\n实体原型已经做过打印与试玩测试。",
+        "en": "Delve Into The Dungeon was a course project for Game Design Methodology at Rutgers University, made with Casey Viezel. It is essentially a tabletop version of Slay the Spire, reworked so it plays well around a dinner table: four players make decisions together and fight their way down to the boss at the bottom of the dungeon.\n\nEach player has a character card with its own stats and abilities, and every decision made while exploring triggers a randomly generated event. No two runs follow the same route or run into the same encounters, so starting over means a brand-new dungeon.\n\nThe physical prototype has been printed and playtested."
+      },
       "highlights": [
-        "四人同桌的 Roguelike 桌游原型",
-        "角色卡拥有独立数值与技能，探索决策触发随机事件",
-        "为桌面对战重新设计规则，灵感来自《杀戮尖塔》"
+        {
+          "zh": "四人同桌的 Roguelike 桌游原型",
+          "en": "A four-player tabletop roguelike prototype"
+        },
+        {
+          "zh": "角色卡拥有独立数值与技能，探索决策触发随机事件",
+          "en": "Character cards with distinct stats and abilities; exploration decisions trigger random events"
+        },
+        {
+          "zh": "为桌面对战重新设计规则，灵感来自《杀戮尖塔》",
+          "en": "Rules redesigned for tabletop play, inspired by Slay the Spire"
+        }
       ],
       "demo": null,
       "links": [],
       "gallery": [
-        { "src": "images/projects/delve-into-the-dungeon/01.webp", "caption": "实体原型盒（自行打印制作的版本）" },
-        { "src": "images/projects/delve-into-the-dungeon/02.webp", "caption": "" }
+        {
+          "src": "images/projects/delve-into-the-dungeon/01.webp",
+          "caption": { "zh": "实体原型盒（自行打印制作的版本）", "en": "Physical prototype box (self-printed build)" }
+        },
+        { "src": "images/projects/delve-into-the-dungeon/02.webp", "caption": { "zh": "", "en": "" } }
       ]
     }
   ]

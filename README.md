@@ -18,6 +18,22 @@
 | 样式 | 原生 CSS（`src/styles/global.css`、`src/styles/pages.css`），深色主题 + CSS 变量 |
 | 图片 | `public/images/**` 下的静态文件（含自动生成的占位 SVG） |
 | 渲染 | 构建期预渲染（SSG）：首页渲染成静态 HTML 写进 `docs/index.html`，客户端再 hydration |
+| 语言 | 中英双语，右上角按钮切换（`src/i18n/`）。默认中文，跟随浏览器语言，可用 `?lang=en` 分享英文链接 |
+
+### 双语（i18n）怎么工作的
+
+- **界面文案**在 `src/i18n/ui-text.js`，按 key 写 `{ zh, en }`，组件用 `t('key')` 取。
+- **内容文案**（作品介绍、关于我等）在 `public/data/projects.json`，每个文本字段本身就是 `{ zh, en }`，组件用 `tf(field)` 取 —— 改文案不用动代码。
+- **语言怎么定**（优先级从高到低）：
+  1. URL 里的 `?lang=en` / `?lang=zh`（可分享、可前进后退）
+  2. `localStorage` 里上次的手动选择（因为 HashRouter 站内跳转会丢 query，只靠 URL 会导致「切英文→点进作品→变回中文」）
+  3. 浏览器语言：`zh*` 用中文，其余用英文；都识别不出则中文
+- **网址写法**：HashRouter 下参数要写在 `#` **之后** —— `https://mingbinportfolio.com/#/?lang=en`。
+  写成 `/?lang=en`（在 `#` 之前）是文档级 query，HashRouter 看不到。
+- **为什么不会闪一下中文**：构建期预渲染出来的 HTML 是中文，所以在 `</head>` 前注入了一段极小的**同步**脚本
+  （见 `scripts/prerender.mjs`），它在 React 之前就跑完判定：中文浏览器什么都不做，英文浏览器写 localStorage
+  并把网址补成 `?lang=en`。这样 React 首次渲染就是正确语言，也就不存在「HTML 中文 / 客户端英文」的 hydration 不一致。
+- **改语言什么时候生效**：切换是运行时的，不用重新构建；但**内容**改动（`projects.json`）仍然需要重新构建才能上线。
 
 ### 为什么用 HashRouter / 相对路径
 
@@ -83,14 +99,17 @@ MingbinPortfolio/
 │     ├─ covers/<slug>.svg      ← 列表页封面图
 │     └─ projects/<slug>/01.svg ← 详情页横向滚动图
 ├─ scripts/
-│  ├─ add-project.mjs           ← npm run new:project 新增作品向导
-│  ├─ check-content.mjs         ← npm run check 内容自检（JSON / 字段 / 图片）
-│  ├─ prerender.mjs             ← 把首页 HTML + 数据种子注入 docs/index.html
+│  ├─ add-project.mjs           ← npm run new:project 新增作品向导（逐项问中英文）
+│  ├─ check-content.mjs         ← npm run check 内容自检（含双语字段是否都填了）
+│  ├─ prerender.mjs             ← 注入首页 HTML + 数据种子 + 语言引导脚本
 │  └─ gen-placeholders.mjs      ← npm run gen:art 生成占位图
 └─ src/
    ├─ entry-client.jsx          ← 浏览器入口（HashRouter + hydration）
    ├─ entry-server.jsx          ← 预渲染入口（StaticRouter + renderToString）
    ├─ App.jsx                   ← 路由表 / 滚动管理 / 站点标题 / Main 组合
+   ├─ i18n/
+   │  ├─ i18n.jsx               ← 语言状态、检测、t()/tf() 取值
+   │  └─ ui-text.js             ← 界面文案词典（{ zh, en }）
    ├─ data/
    │  ├─ portfolio.js           ← 读取 + 校验 + 归一化 JSON（含资源路径解析）
    │  └─ PortfolioContext.jsx   ← 全站只请求一次，Context 分发 + 重试
@@ -118,13 +137,18 @@ MingbinPortfolio/
 
 打开 `public/data/projects.json`，复制 `projects` 数组里任意一段，改字段即可。**唯一必须唯一的是 `slug`**（它决定网址 `#/project/<slug>`）。
 
+> ⚠️ **所有给人看的文本都是双语的**，要写成 `{ "zh": "…", "en": "…" }`。
+> 只填一种语言不会报错，但另一种语言会回退显示同一段文字（等于没翻译）。
+> 改完跑一次 `npm run check`，它会逐个双语字段检查中英文是否都填了。
+
 ### 方式 B：向导脚本
 
 ```bash
 npm run new:project
 ```
 
-按提示逐项填写（作品名、slug、年份、标签、简介、介绍……），脚本会自动：
+按提示逐项填写。文本类字段会**分别问中文和英文两次**（`作品名 · 中文` / `作品名 · English`），
+语言无关的字段（slug、年份、平台、工具、主题色）只问一次。脚本会自动：
 
 1. 把新作品追加到 `projects.json`（原文件备份为 `projects.json.bak`）；
 2. 生成一套占位图（封面 + N 张展示图）。
@@ -136,26 +160,34 @@ npm run new:project
 ```jsonc
 {
   "site": {
-    "title": "MINGBIN YANG",              // 英文名/站点名（Header 左上角 + 首页大标题 + 页脚）
-    "nameZh": "杨铭彬",                    // 中文名（显示在首页大标题下方、导航左上角小字、页脚、浏览器标签页；留空则不显示）
-    "tagline": "游戏开发与创新",            // 副标题
-    "intro": "首页 Hero 里的自我介绍段落（留空则不显示）",
+    "title": "MINGBIN YANG",              // 站点名（Header 左上角 + 首页大标题 + 页脚），两种语言共用
+    "nameZh": { "zh": "杨铭彬", "en": "Mingbin Yang" },  // 姓名（大标题下方、导航小字、页脚；留空则不显示）
+    "tagline": { "zh": "游戏开发与创新", "en": "Game Development and Innovation" },
+    "intro": { "zh": "首页 Hero 自我介绍…", "en": "Hero intro…" },   // 留空则不显示
     "nav": [                              // Header 导航项
-      { "label": "首页", "to": "/" },
-      { "label": "作品", "to": "/", "scrollTo": "projects" },  // scrollTo = 跳到首页某个区块 id
-      { "label": "关于", "to": "/", "scrollTo": "about" }
+      { "label": { "zh": "首页", "en": "Home" }, "to": "/" },
+      { "label": { "zh": "作品", "en": "Work" }, "to": "/", "scrollTo": "projects" },  // scrollTo = 跳到首页某区块 id
+      { "label": { "zh": "关于", "en": "About" }, "to": "/", "scrollTo": "about" }
     ],
-    "categoryOrder": ["第一人称", "第三人称", "2D", "桌游"],  // 首页筛选栏的显示顺序（只影响顺序；筛选项本身来自各作品的 category）
-    "about": {                            // 首页「关于我」区块，整段删掉就不显示
-      "title": "关于我",
+    // 首页筛选栏的顺序。筛选以「中文值」为稳定 key（en 只是显示用的标签）
+    "categoryOrder": [
+      { "zh": "第一人称", "en": "First-person" },
+      { "zh": "第三人称", "en": "Third-person" }
+    ],
+    "about": {                            // 首页「关于我」区块，整段删掉就不显示（指向它的导航项也会自动移除）
+      "title": { "zh": "关于我", "en": "About me" },
       "portrait": "images/about/portrait.webp",   // 头像（可删）
-      "summary": "一段自我介绍",
-      "education": ["学校 A —— 学位（在读）", "学校 B —— 学位"],
-      "skills": [{ "label": "游戏开发", "value": "Unity 引擎" }],
-      "nextWork": "下一部作品：Spring —— 2D 平台跳跃（开发中）"
+      "summary": { "zh": "自我介绍", "en": "Bio" },
+      "education": [{ "zh": "学校 A —— 学位", "en": "School A — Degree" }],
+      "skills": [{ "label": { "zh": "游戏开发", "en": "Game development" },
+                   "value": { "zh": "Unity 引擎", "en": "Unity" } }],
+      "nextWork": { "zh": "下一部作品…", "en": "Next up…" }   // 可留空字符串
     },
-    "contact": { "email": "you@example.com", "links": [{ "label": "LinkedIn", "url": "https://…" }] },
-    "footer": "页脚一句话"
+    "contact": {
+      "email": "you@example.com",
+      "links": [{ "label": { "zh": "LinkedIn", "en": "LinkedIn" }, "url": "https://…" }]
+    },
+    "footer": { "zh": "页脚一句话", "en": "Footer line" }
   },
   "projects": [ /* 见下表 */ ]
 }
@@ -165,60 +197,63 @@ npm run new:project
 
 单个作品：
 
-| 字段 | 必填 | 说明 |
-| --- | --- | --- |
-| `slug` | ✅ | 作品唯一标识，网址 `#/project/<slug>` |
-| `title` | ✅ | 作品名（列表 + 详情页大标题） |
-| `subtitle` | | 副标题（类型 / 技术栈） |
-| `year` | | 年份，列表卡片右上角显示 |
-| `role` | | 担任角色 |
-| `platforms` | | 平台数组，如 `["PC", "PS5"]` |
-| `tools` | | 工具 / 技术数组 |
+| 字段 | 必填 | 双语 | 说明 |
+| --- | --- | --- | --- |
+| `slug` | ✅ | — | 作品唯一标识，网址 `#/project/<slug>` |
+| `title` | ✅ | ✅ | 作品名（列表 + 详情页大标题） |
+| `subtitle` | | ✅ | 副标题（类型 / 技术栈） |
+| `year` | | — | 年份，列表卡片右上角显示 |
+| `role` | | ✅ | 担任角色 |
+| `platforms` | | — | 平台数组，如 `["PC", "PS5"]`（专名，两种语言共用） |
+| `tools` | | — | 工具 / 技术数组 |
 | `category` | | 首页筛选分类（如 `第一人称` / `第三人称` / `2D`）。首页筛选栏就是按它自动生成的：改 JSON 就改筛选项；留空则该作品只出现在「全部」里，卡片上回落显示第一个 `tags` |
 | `tags` | | 标签数组，详情页展示（列表卡片只显示 `category` 一个标签） |
 | `accent` | | 主题色（如 `#ff5c39`），影响卡片悬停、序号、Demo 卡片配色 |
 | `cover` | ✅ | 列表页封面图路径 |
 | `summary` | | 列表页一句话简介 |
 | `description` | | 详情页作品介绍，**用空行分段**（多段落用 `\n\n`） |
-| `highlights` | | 亮点/成果数组，详情页显示为要点列表 |
-| `gallery` | | 详情页横向滚动的图片数组：`[{ "src": "images/…", "caption": "图注" }]`，也可直接写字符串路径 |
-| `demo` | | `{ "label": "试玩 Demo", "url": "https://…" }`；留 `null` 则详情页显示「Demo 暂未公开」 |
-| `links` | | 其他相关链接：`[{ "label": "设计拆解", "url": "https://…" }]` |
-| `featured` | | `true` 时封面右上角显示「精选」 |
-| `order` | | 排序，数字越小越靠前 |
+| `highlights` | | ✅ | 亮点/成果数组，详情页显示为要点列表 |
+| `gallery` | | caption ✅ | 详情页横向滚动的图片数组：`[{ "src": "images/…", "caption": { "zh": "图注", "en": "Caption" } }]`（`caption` 可留空串） |
+| `demo` | | label ✅ | `{ "label": { "zh": "试玩 Demo", "en": "Play demo" }, "url": "https://…" }`；留 `null` 则详情页显示「Demo 暂未公开」 |
+| `links` | | ✅ | 其他相关链接：`[{ "label": { "zh": "设计拆解", "en": "Design breakdown" }, "url": "https://…" }]` |
+| `featured` | | — | `true` 时封面右上角显示「精选」 |
+| `order` | | — | 排序，数字越小越靠前 |
 
 图片路径规则：**相对于站点根目录**，例如 `images/covers/xxx.svg`；也可以直接写完整 `https://` 外链。
 
 ### 首页文案改哪里（对照表）
 
-**绝大多数文字都在 `public/data/projects.json`**，改完保存、刷新页面即可，不用重新打包：
+**绝大多数文字都在 `public/data/projects.json`**（每个字段都是 `{ zh, en }`）：
 
 | 首页位置 | JSON 字段 |
 | --- | --- |
 | 顶部导航文字与顺序 | `site.nav[].label` |
-| Header 站点名 + 小字副标题 | `site.title` / `site.tagline` |
+| Header 站点名 + 小字副标题 | `site.title`（共用）/ `site.nameZh` / `site.tagline` |
 | Hero 大标题 | `site.title`（按空格拆成多行显示） |
 | Hero 副标题 | `site.tagline` |
 | Hero 自我介绍段落（留空则不显示） | `site.intro` |
 | Hero 右侧按钮（itch.io / LinkedIn…） | `site.contact.links[]` |
-| 浏览器标签页标题 | `site.title` + `site.tagline` |
+| 浏览器标签页标题 | `src/i18n/ui-text.js` 的 `site.title`（切换语言时立即更新） |
 | 「关于我」标题 / 头像 / 简介 / 教育经历 / 技能 / 下一部作品 | `site.about.title` / `.portrait` / `.summary` / `.education[]` / `.skills[]` / `.nextWork` |
 | 作品卡片：作品名 / 副标题 / 年份 / 简介 / 分类标签 | 每个作品的 `title` / `subtitle` / `year` / `summary` / `category` |
 | 筛选栏有哪些项、文本是什么 | 各作品的 `category`（顺序由 `site.categoryOrder` 决定） |
 | 页脚标语与链接 | `site.footer` / `site.contact.email` / `site.contact.links[]` |
 
-**剩下少量「界面固定字样」写在代码里**（行号可能随代码变动，按关键字搜索即可）：
+**界面固定字样**（按钮、提示、无障碍标签）全部集中在 `src/i18n/ui-text.js`，按 key 写 `{ zh, en }`：
 
-| 位置 | 文字 | 文件:行 |
-| --- | --- | --- |
-| Hero 上方小标 | Game Portfolio | `src/pages/HomePage.jsx:31` |
-| Hero 主按钮 | 查看作品 ↓ | `src/pages/HomePage.jsx:42` |
-| Hero 三个统计项名称 | 作品数量 / 涉及领域 / 年份跨度 | `src/pages/HomePage.jsx:18-20` |
-| 作品区块小标 / 标题 / 说明 | Selected Works / 作品列表 / 点击任意作品… | `src/pages/HomePage.jsx:162-166` |
-| 「关于我」区块小标 | About & Contact | `src/pages/HomePage.jsx:83` |
-| 关于我里的三个小标题与说明 | 教育经历 / 技能 / 联系我 / 欢迎就合作… | `src/pages/HomePage.jsx:101,112,125,126` |
-| 卡片徽标与底部提示 | 精选 / 查看作品详情 → | `src/components/ProjectCard.jsx:20,39` |
-| 导航右侧按钮、页脚右下标语 | 联系我 / 纯静态站点… | `src/components/Header.jsx:78`、`src/components/Footer.jsx:28` |
+| 位置 | key 前缀 |
+| --- | --- |
+| 导航、语言切换按钮、站点标题 | `site.*` / `nav.*` |
+| 首页 Hero（小标、按钮、统计项名） | `hero.*` |
+| 作品列表区块（标题、说明、筛选、空态） | `projects.*` |
+| 作品卡片（精选徽标、查看详情、封面 alt） | `card.*` |
+| 作品详情页（返回、面包屑、章节标题、信息卡、Demo） | `project.*` |
+| 图库与灯箱（提示、上一张/下一张、关闭、对话框名称） | `gallery.*` |
+| 「关于我」区块（小标、教育经历、技能、联系我） | `about.*` |
+| 页脚、加载/错误/空状态、404 | `footer.*` / `feedback.*` / `notFound.*` |
+
+> 新增界面文字时**不要**直接在 `.jsx` 里写中文字符串，去 `ui-text.js` 加一条 `{ zh, en }`，
+> 然后组件里用 `t('your.key')`。
 
 改 `.jsx` 里的文字在 `npm run dev` 下同样即时生效（热更新）；线上则需要重新 `npm run build` 后再上传。若希望这些界面字样也统一搬进 JSON（例如放到 `site.ui`），说一声即可。
 
@@ -307,6 +342,24 @@ Cloudflare Pages 会自动重新构建并发布。
 
 **页面显示「数据加载失败」？**
 ① 确认 `public/data/projects.json` 存在且 JSON 合法（不能有注释、结尾不能有多余逗号）；② 确认是通过 `http(s)` 打开而不是 `file://`；③ 点错误面板上的「重新加载」。
+
+**英文页面怎么进？网址是什么？**
+点右上角的 `EN` / `中` 按钮，或直接访问 `https://mingbinportfolio.com/#/?lang=en`。
+⚠️ 参数必须写在 `#` **之后**：`/?lang=en`（在 `#` 之前）是文档级 query，HashRouter 读不到。
+
+**为什么我打开就是英文 / 就是中文？**
+默认跟随浏览器语言（`zh*` → 中文，其余 → 英文），并记住你上次的手动选择。
+清除选择：浏览器控制台执行 `localStorage.removeItem('portfolio-lang')` 后刷新。
+
+**加了新作品，英文页面还是空的 / 显示中文？**
+该字段没写 `en`。跑 `npm run check`，它会明确指出哪个字段缺英文。
+
+**想再加一种语言（比如日文）？**
+① `src/i18n/i18n.jsx` 的 `LANGS` 加上 `'ja'`，`normalizeLangTag` 里加 `ja` 的识别；
+② `src/i18n/ui-text.js` 每个词条加一个 `ja`；
+③ `projects.json` 每个文本字段加 `ja`（`tf()` 会自动回退，所以可以分批补）；
+④ `scripts/prerender.mjs` 的语言引导脚本里加一条 `ja` 判定。
+改动面比中英双语大，因为现在是「中文为默认」的二元假设。
 
 **详情页 404（找不到作品）？**
 链接里的 slug 与 JSON 中的 `slug` 不一致，检查拼写。

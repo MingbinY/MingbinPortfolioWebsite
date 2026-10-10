@@ -1,39 +1,48 @@
-export function LoadingPanel({ label = '正在加载作品数据…' }) {
+import { useI18n } from '../i18n/i18n.jsx'
+
+export function LoadingPanel({ label }) {
+  const { t } = useI18n()
   return (
     <div className="feedback feedback--loading" role="status">
       <span className="feedback__spinner" aria-hidden="true" />
-      <p>{label}</p>
+      <p>{label || t('feedback.loadingProjects')}</p>
     </div>
   )
 }
 
 export function ErrorPanel({ error, onRetry }) {
+  const { t } = useI18n()
+  // 数据层抛的是 PortfolioError（带 code + vars），据此输出当前语言的提示；
+  // 其它未知错误才退回原始 message。
+  const detail = error?.code
+    ? t(`error.${error.code}`, error.vars || {})
+    : String(error?.message || error)
   return (
     <div className="feedback feedback--error" role="alert">
-      <h3>数据加载失败</h3>
-      <pre>{String(error?.message || error)}</pre>
+      <h3>{t('feedback.errorTitle')}</h3>
+      <pre>{detail}</pre>
       <ul>
         <li>
-          数据文件位置：<code>public/data/projects.json</code>
+          {t('feedback.errorFile')}
+          <code>public/data/projects.json</code>
         </li>
-        <li>
-          用 <code>npm run dev</code> 启动本地服务访问（不要用 file:// 直接打开 dist/index.html）
-        </li>
-        <li>JSON 里不要写注释、不要有结尾多余逗号</li>
+        <li>{t('feedback.errorDev', { cmd: 'npm run dev' })}</li>
+        <li>{t('feedback.errorJson')}</li>
       </ul>
       {onRetry ? (
         <button type="button" className="btn btn--primary" onClick={onRetry}>
-          重新加载
+          {t('feedback.retry')}
         </button>
       ) : null}
     </div>
   )
 }
 
-export function EmptyPanel({ title = '还没有作品', hint }) {
+export function EmptyPanel({ title, hint }) {
+  const { t } = useI18n()
   return (
     <div className="feedback feedback--empty">
-      <h3>{title}</h3>
+      <h3>{title || t('feedback.emptyTitle')}</h3>
       {hint ? <p>{hint}</p> : null}
     </div>
   )

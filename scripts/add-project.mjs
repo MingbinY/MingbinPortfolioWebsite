@@ -79,6 +79,33 @@ async function askDescription() {
   return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim()
 }
 
+/**
+ * 询问一个双语字段，返回 { zh, en }。
+ *
+ * 内容字段现在都是双语的：只填一种语言时，另一种语言会回退显示同一段文字
+ * （不会空白，但等于没翻译），所以这里明确要求两次输入。
+ */
+async function askBilingual(label, { fallback = '', required = false } = {}) {
+  const zh = await ask(`${label} · 中文`, { fallback, required })
+  const en = await ask(`${label} · English`, { required })
+  return { zh, en: en || zh }
+}
+
+async function askBilingualList(label, { required = false } = {}) {
+  const zh = toList(await ask(`${label} · 中文（逗号分隔）`, { required }))
+  const enRaw = toList(await ask(`${label} · English (comma separated)`, { required }))
+  // 英文按位置与中文对齐；缺的项回退用中文，避免数组长度不一致导致对应错乱
+  return zh.map((item, i) => ({ zh: item, en: enRaw[i] || item }))
+}
+
+async function askBilingualDescription() {
+  console.log('作品介绍 · 中文（详情页正文）：可多行，用空行分段；单独输入 . 结束')
+  const zh = await askDescription()
+  console.log('作品介绍 · English: same format; a single . to finish')
+  const en = await askDescription()
+  return { zh, en: en || zh }
+}
+
 async function main() {
   console.log('=== 新增作品向导（写入 public/data/projects.json） ===\n')
 
@@ -88,24 +115,25 @@ async function main() {
     throw new Error('projects.json 结构异常：缺少 projects 数组')
   }
 
-  const title = await ask('作品名（列表/详情页显示的标题）', { required: true })
-  const defaultSlug = slugify(title)
+  const title = await askBilingual('作品名（列表/详情页显示的标题）', { required: true })
+  const defaultSlug = slugify(title.en || title.zh)
   let slug = await ask('slug（网址标识，英文小写+短横线）', { fallback: defaultSlug })
   if (projects.some((item) => item.slug === slug)) {
     slug = `${slug}-${Date.now().toString(36).slice(-4)}`
     console.log(`  ↑ slug 重复，已自动改为：${slug}`)
   }
-  const subtitle = await ask('副标题（类型 / 技术栈，例如「第三人称生存恐怖 · UE5」）')
+  const subtitle = await askBilingual('副标题（类型 / 技术栈，例如「第三人称生存恐怖 · UE5」）')
   const year = await ask('年份', { fallback: currentYear })
-  const role = await ask('担任角色')
-  const platforms = toList(await ask('平台（逗号分隔，例如 PC, PS5）'))
-  const tools = toList(await ask('工具 / 技术（逗号分隔）'))
-  const tags = toList(await ask('标签（逗号分隔，会用于首页筛选）'))
+  const role = await askBilingual('担任角色')
+  const category = await askBilingual('分类（首页筛选用，例如 第一人称 / 第三人称 / 2D / 桌游）')
+  const platforms = toList(await ask('平台（逗号分隔，例如 PC, PS5；语言无关的专名，只填一次）'))
+  const tools = toList(await ask('工具 / 技术（逗号分隔，例如 Unity, C#；语言无关，只填一次）'))
+  const tags = await askBilingualList('标签（详情页展示）')
   const accent = await ask('主题色（十六进制，例如 #ff5c39）', { fallback: '#ff5c39' })
-  const summary = await ask('一句话简介（列表页显示）')
-  const description = await askDescription()
+  const summary = await askBilingual('一句话简介（列表页显示）')
+  const description = await askBilingualDescription()
   const demoUrl = await ask('Demo 链接（可留空，留空则详情页显示「Demo 暂未公开」）')
-  const demoLabel = demoUrl ? await ask('Demo 按钮文案', { fallback: '试玩 Demo' }) : ''
+  const demoLabel = demoUrl ? await askBilingual('Demo 按钮文案', { fallback: '试玩 Demo' }) : ''
   const galleryCountRaw = await ask('展示图数量（详情页横向滚动的图片张数）', { fallback: '4' })
 
   const galleryCount = Math.max(1, Math.min(20, Number.parseInt(galleryCountRaw, 10) || 4))
@@ -119,6 +147,7 @@ async function main() {
     role,
     platforms,
     tools,
+    category,
     tags,
     accent,
     featured: false,
@@ -131,7 +160,7 @@ async function main() {
     links: [],
     gallery: Array.from({ length: galleryCount }, (_, index) => ({
       src: `images/projects/${slug}/${String(index + 1).padStart(2, '0')}.svg`,
-      caption: '',
+      caption: { zh: '', en: '' },
     })),
   }
 
@@ -142,8 +171,9 @@ async function main() {
   console.log(`\n已写入 projects.json（备份：public/data/projects.json.bak）`)
   console.log('正在生成占位图…')
   await generatePlaceholders({ only: slug })
-  console.log(`\n完成！运行 npm run dev 打开首页即可看到《${title}》。`)
+  console.log(`\n完成！运行 npm run dev 打开首页即可看到《${title.zh || title.en}》。`)
   console.log('提示：把 public/images/ 下的占位图换成真实截图（保持同名）就能直接上线；补充 highlights / links 字段可让详情页更完整。')
+  console.log('      记得跑一次 npm run check，它会检查每个双语字段的中英文是否都填了。')
 }
 
 try {

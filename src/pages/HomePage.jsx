@@ -1,9 +1,12 @@
 import { useMemo } from 'react'
 import { usePortfolioData } from '../data/PortfolioContext.jsx'
+import { useI18n } from '../i18n/i18n.jsx'
 import ProjectList from '../components/ProjectList.jsx'
 import { EmptyPanel, ErrorPanel, SkeletonCard } from '../components/Feedback.jsx'
 
 function Hero({ site, projects, ready }) {
+  const { t, tf } = useI18n()
+
   const stats = useMemo(() => {
     const years = projects.map((project) => Number(project.year)).filter((year) => Number.isFinite(year) && year > 1900)
     const span =
@@ -13,35 +16,37 @@ function Hero({ site, projects, ready }) {
           ? String(Math.min(...years))
           : `${Math.min(...years)} – ${Math.max(...years)}`
     return [
-      { label: '作品数量', value: String(projects.length).padStart(2, '0') },
-      { label: '年份跨度', value: span },
+      { label: t('hero.statCount'), value: String(projects.length).padStart(2, '0') },
+      { label: t('hero.statYears'), value: span },
     ]
-  }, [projects])
+  }, [projects, t])
 
   const scrollToProjects = () =>
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  const nameZh = tf(site.nameZh)
 
   return (
     <section className="hero">
       <div className="hero__glow" aria-hidden="true" />
       <div className="hero__inner">
-        <p className="hero__eyebrow">Game Portfolio</p>
+        <p className="hero__eyebrow">{t('hero.eyebrow')}</p>
         <h1 className="hero__title">
           {(site.title || 'PORTFOLIO').split(' ').map((word, index) => (
             <span key={`${word}-${index}`}>{word}</span>
           ))}
         </h1>
-        {site.nameZh ? <p className="hero__name-zh">{site.nameZh}</p> : null}
-        <p className="hero__tagline">{site.tagline}</p>
-        {site.intro ? <p className="hero__intro">{site.intro}</p> : null}
+        {nameZh ? <p className="hero__name-zh">{nameZh}</p> : null}
+        <p className="hero__tagline">{tf(site.tagline)}</p>
+        {tf(site.intro) ? <p className="hero__intro">{tf(site.intro)}</p> : null}
 
         <div className="hero__actions">
           <button type="button" className="btn btn--primary" onClick={scrollToProjects}>
-            查看作品 ↓
+            {t('hero.viewWorks')}
           </button>
           {site.contact?.email ? (
             <a className="btn btn--ghost" href={`mailto:${site.contact.email}`}>
-              和我聊聊
+              {t('hero.talkToMe')}
             </a>
           ) : null}
           {(site.contact?.links || []).map((link) => (
@@ -52,7 +57,7 @@ function Hero({ site, projects, ready }) {
               target="_blank"
               rel="noreferrer noopener"
             >
-              {link.label} ↗
+              {tf(link.label)} ↗
             </a>
           ))}
         </div>
@@ -67,41 +72,48 @@ function Hero({ site, projects, ready }) {
               </div>
             ))}
           </dl>
-        ) : null}      </div>
+        ) : null}
+      </div>
     </section>
   )
 }
 
-function AboutSection({ about, contact }) {
+function AboutSection({ about, contact, siteTitle }) {
+  const { t, tf } = useI18n()
   if (!about) return null
   const links = contact?.links || []
+  const aboutTitle = tf(about.title)
 
   return (
     <section className="section about" id="about">
       <div className="section__head">
         <div>
-          <p className="section__eyebrow">About &amp; Contact</p>
-          <h2 className="section__title">{about.title}</h2>
+          <p className="section__eyebrow">{t('about.eyebrow')}</p>
+          <h2 className="section__title">{aboutTitle}</h2>
         </div>
-        {about.nextWork ? <p className="section__desc">{about.nextWork}</p> : null}
+        {tf(about.nextWork) ? <p className="section__desc">{tf(about.nextWork)}</p> : null}
       </div>
 
       <div className="about__grid">
         {about.portrait ? (
           <figure className="about__portrait">
-            <img src={about.portrait} alt={`${about.title} 头像`} loading="lazy" />
+            <img
+              src={about.portrait}
+              alt={t('about.portraitAlt', { title: aboutTitle, name: siteTitle })}
+              loading="lazy"
+            />
           </figure>
         ) : null}
 
         <div className="about__body">
-          {about.summary ? <p className="about__summary">{about.summary}</p> : null}
+          {tf(about.summary) ? <p className="about__summary">{tf(about.summary)}</p> : null}
 
           {about.education.length ? (
             <div className="about__block">
-              <h3>教育经历</h3>
+              <h3>{t('about.education')}</h3>
               <ul className="about__list">
                 {about.education.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item.id}>{tf(item.label)}</li>
                 ))}
               </ul>
             </div>
@@ -109,12 +121,12 @@ function AboutSection({ about, contact }) {
 
           {about.skills.length ? (
             <div className="about__block">
-              <h3>技能</h3>
+              <h3>{t('about.skills')}</h3>
               <dl className="about__skills">
                 {about.skills.map((item) => (
-                  <div key={`${item.label}-${item.value}`}>
-                    <dt>{item.label}</dt>
-                    <dd>{item.value}</dd>
+                  <div key={item.id}>
+                    <dt>{tf(item.label)}</dt>
+                    <dd>{tf(item.value)}</dd>
                   </div>
                 ))}
               </dl>
@@ -122,8 +134,8 @@ function AboutSection({ about, contact }) {
           ) : null}
 
           <div className="about__contact">
-            <h3>联系我</h3>
-            <p className="about__contact-text">欢迎就合作、实习与全职机会联系我。</p>
+            <h3>{t('about.contact')}</h3>
+            <p className="about__contact-text">{t('about.contactText')}</p>
             <div className="about__contact-links">
               {contact?.email ? (
                 <a className="btn btn--primary" href={`mailto:${contact.email}`}>
@@ -138,7 +150,7 @@ function AboutSection({ about, contact }) {
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  {link.label} ↗
+                  {tf(link.label)} ↗
                 </a>
               ))}
             </div>
@@ -151,6 +163,7 @@ function AboutSection({ about, contact }) {
 
 export default function HomePage() {
   const { status, error, retry, projects, site } = usePortfolioData()
+  const { t } = useI18n()
 
   return (
     <>
@@ -159,17 +172,15 @@ export default function HomePage() {
       <section className="section" id="projects">
         <div className="section__head">
           <div>
-            <p className="section__eyebrow">Selected Works</p>
-            <h2 className="section__title">作品列表</h2>
+            <p className="section__eyebrow">{t('projects.eyebrow')}</p>
+            <h2 className="section__title">{t('projects.title')}</h2>
           </div>
-          <p className="section__desc">
-            点击任意作品，进入详情页查看图片展示、作品介绍与 Demo 链接。
-          </p>
+          <p className="section__desc">{t('projects.desc')}</p>
         </div>
 
         {status === 'loading' ? (
           <div role="status" aria-busy="true">
-            <span className="sr-only">正在加载作品数据…</span>
+            <span className="sr-only">{t('feedback.loadingProjects')}</span>
             <div className="project-grid">
               {[0, 1, 2, 3, 4, 5].map((key) => (
                 <SkeletonCard key={key} />
@@ -181,10 +192,7 @@ export default function HomePage() {
         {status === 'error' ? <ErrorPanel error={error} onRetry={retry} /> : null}
 
         {status === 'ready' && projects.length === 0 ? (
-          <EmptyPanel
-            title="还没有作品数据"
-            hint="打开 public/data/projects.json，往 projects 数组里加一条作品即可，不用改代码。"
-          />
+          <EmptyPanel title={t('projects.emptyTitle')} hint={t('projects.emptyHint')} />
         ) : null}
 
         {status === 'ready' && projects.length > 0 ? (
@@ -192,7 +200,7 @@ export default function HomePage() {
         ) : null}
       </section>
 
-      <AboutSection about={site.about} contact={site.contact} />
+      <AboutSection about={site.about} contact={site.contact} siteTitle={site.title} />
     </>
   )
 }

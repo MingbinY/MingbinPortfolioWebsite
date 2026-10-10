@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { usePortfolioData } from '../data/PortfolioContext.jsx'
+import { useI18n } from '../i18n/i18n.jsx'
 
 export default function Header() {
   const { site } = usePortfolioData()
+  const { t, tf, lang, setLang } = useI18n()
   const location = useLocation()
   const navigate = useNavigate()
   const [open, setOpen] = useState(false)
@@ -41,43 +43,54 @@ export default function Header() {
   return (
     <header className={`site-header${scrolled ? ' is-scrolled' : ''}`}>
       <div className="site-header__inner">
-        <Link className="brand" to="/" aria-label="回到首页">
+        <Link className="brand" to="/" aria-label={t('site.brandHome')}>
           <span className="brand__mark" aria-hidden="true" />
           <span className="brand__text">
             <strong>{site.title}</strong>
-            <small>
-              {site.nameZh ? `${site.nameZh} · ${(site.tagline || '').split(' · ')[0]}` : site.tagline}
-            </small>
+            <small>{[tf(site.nameZh), tf(site.tagline)].filter(Boolean).join(' · ')}</small>
           </span>
         </Link>
 
-        <button
-          type="button"
-          className="nav-toggle"
-          aria-expanded={open}
-          aria-controls="site-nav"
-          onClick={() => setOpen((value) => !value)}
-        >
-          <span />
-          <span />
-          <span />
-          <span className="sr-only">打开导航</span>
-        </button>
+        <div className="site-header__actions">
+          <button
+            type="button"
+            className="lang-toggle"
+            onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+            aria-label={t('nav.langSwitchAria')}
+            title={t('nav.langSwitchAria')}
+          >
+            {t('nav.langSwitchTo')}
+          </button>
+
+          <button
+            type="button"
+            className="nav-toggle"
+            aria-expanded={open}
+            aria-controls="site-nav"
+            aria-label={open ? t('nav.close') : t('nav.open')}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <span />
+            <span />
+            <span />
+            <span className="sr-only">{open ? t('nav.close') : t('nav.open')}</span>
+          </button>
+        </div>
 
         <nav id="site-nav" className={`site-nav${open ? ' is-open' : ''}`}>
           {site.nav.map((item) => (
             <Link
-              key={`${item.label}-${item.to}-${item.scrollTo || ''}`}
+              key={`${tf(item.label)}-${item.to}-${item.scrollTo || ''}`}
               to={item.to}
               className={`site-nav__link${isActive(item) ? ' is-active' : ''}`}
               onClick={(event) => handleNav(event, item)}
             >
-              {item.label}
+              {tf(item.label)}
             </Link>
           ))}
           {site.contact?.email ? (
             <a className="site-nav__cta" href={`mailto:${site.contact.email}`}>
-              联系我
+              {t('nav.contact')}
             </a>
           ) : null}
         </nav>

@@ -194,7 +194,19 @@ export async function generatePlaceholders({ force = false, only = null, silent 
     if (!slug) continue
     if (only && only !== slug) continue
 
-    log(`· ${project.title || slug}`)
+    // 双语字段是 { zh, en } 对象；占位图上的文字用英文优先（拉丁字母在 SVG 里更稳妥，
+    // 且这些图本来就是临时的）。纯字符串字段原样返回。
+    const text = (value, fallback = '') => {
+      if (value == null) return fallback
+      if (typeof value === 'string') return value || fallback
+      if (typeof value === 'object') return value.en || value.zh || fallback
+      return String(value)
+    }
+
+    const title = text(project.title, slug)
+    const subtitle = text(project.subtitle)
+
+    log(`· ${title}`)
     const accent = project.accent || '#ff5c39'
 
     if (project.cover) {
@@ -202,8 +214,8 @@ export async function generatePlaceholders({ force = false, only = null, silent 
         publicDir,
         relativePath: project.cover,
         content: coverSvg({
-          title: project.title || slug,
-          subtitle: project.subtitle || '',
+          title,
+          subtitle,
           accent,
           year: project.year,
           slug,
@@ -222,7 +234,7 @@ export async function generatePlaceholders({ force = false, only = null, silent 
       const result = await writeSvg({
         publicDir,
         relativePath: src,
-        content: gallerySvg({ title: project.title || slug, accent, slug, index: index + 1, total }),
+        content: gallerySvg({ title, accent, slug, index: index + 1, total }),
         force,
         log,
       })

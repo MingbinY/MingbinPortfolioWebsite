@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { PortfolioProvider, usePortfolioData } from './data/PortfolioContext.jsx'
+import { LanguageProvider, useI18n } from './i18n/i18n.jsx'
 import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -28,10 +29,11 @@ function ScrollManager() {
 
 function SiteTitle() {
   const { site } = usePortfolioData()
+  const { t } = useI18n()
   useEffect(() => {
-    const name = [site.nameZh, site.title].filter(Boolean).join(' · ')
-    document.title = name ? `${name} · ${site.tagline || 'Portfolio'}` : 'Game Portfolio'
-  }, [site.nameZh, site.title, site.tagline])
+    // 用界面词典里的固定标题，保证切语言时 <title> 立刻跟着变
+    document.title = t('site.title') || site.title
+  }, [t, site.title])
   return null
 }
 
@@ -76,7 +78,9 @@ export function Main({ Router = HashRouter, routerProps = {}, initialData = null
   return (
     <React.StrictMode>
       <Router {...routerProps}>
-        <App initialData={initialData} />
+        <LanguageProvider>
+          <App initialData={initialData} />
+        </LanguageProvider>
       </Router>
     </React.StrictMode>
   )

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useI18n } from '../i18n/i18n.jsx'
 
 /**
  * 模块一：图片区 —— 横向滚动多图
- * 支持：左右按钮、鼠标拖拽、触屏滑动、滚轮横滚、点击放大（灯箱，Esc/←/→ 可操作）
+ * 支持：左右按钮、鼠标拖拽、触屏滑动、滚轮横滚、点击放大（灯箱，Esc/←/→/Tab 可操作）
  */
 export default function Gallery({ images, title, index: galleryIndex }) {
+  const { t, tf } = useI18n()
   const scrollerRef = useRef(null)
   const dragRef = useRef({ active: false, startX: 0, startLeft: 0, moved: 0 })
   const dialogRef = useRef(null)
@@ -159,28 +161,33 @@ export default function Gallery({ images, title, index: galleryIndex }) {
 
   const closeLightbox = () => setLightbox(-1)
 
+  /** 图片替代文本：优先用图注，没有则退回「作品名 展示图 N」 */
+  const imageAlt = (image, position) =>
+    tf(image.caption) || t('gallery.imageAlt', { title, index: position + 1 })
+
   if (!hasImages) {
     return (
       <div className="gallery gallery--empty">
-        <p>这个作品还没有上传展示图。把图片放进 public/images/ 后在 projects.json 的 gallery 里填上路径即可。</p>
+        <p>{t('gallery.empty')}</p>
       </div>
     )
   }
 
   return (
-    <section className="gallery" aria-label={`${title} 展示图`}>
+    <section className="gallery" aria-label={t('gallery.regionLabel', { title })}>
       {galleryIndex ? (
         <h2 className="project-section__title gallery__title">
-          <span>{galleryIndex}</span>图片展示
+          <span>{galleryIndex}</span>
+          {t('project.section.gallery')}
         </h2>
       ) : null}
       <div className="gallery__bar">
-        <span className="gallery__hint">横向滚动 / 拖拽查看 · 点击放大 · 共 {images.length} 张</span>
+        <span className="gallery__hint">{t('gallery.hint', { total: images.length })}</span>
         <div className="gallery__actions">
-          <button type="button" onClick={() => scrollByCard(-1)} disabled={!edges.prev} aria-label="上一张">
+          <button type="button" onClick={() => scrollByCard(-1)} disabled={!edges.prev} aria-label={t('gallery.prev')}>
             ←
           </button>
-          <button type="button" onClick={() => scrollByCard(1)} disabled={!edges.next} aria-label="下一张">
+          <button type="button" onClick={() => scrollByCard(1)} disabled={!edges.next} aria-label={t('gallery.next')}>
             →
           </button>
         </div>
@@ -209,11 +216,11 @@ export default function Gallery({ images, title, index: galleryIndex }) {
         {images.map((image, index) => (
           <figure className="gallery__item" key={`${image.src}-${index}`}>
             <button type="button" className="gallery__thumb" onClick={() => openLightbox(index)}>
-              <img src={image.src} alt={image.caption || `${title} 展示图 ${index + 1}`} loading="lazy" draggable={false} />
+              <img src={image.src} alt={imageAlt(image, index)} loading="lazy" draggable={false} />
             </button>
             <figcaption>
               <span className="gallery__num">{String(index + 1).padStart(2, '0')}</span>
-              {image.caption || ' '}
+              {tf(image.caption) || ' '}
             </figcaption>
           </figure>
         ))}
@@ -228,7 +235,7 @@ export default function Gallery({ images, title, index: galleryIndex }) {
           className="lightbox"
           role="dialog"
           aria-modal="true"
-          aria-label={`${title} 图片查看器（第 ${lightbox + 1} / ${images.length} 张）`}
+          aria-label={t('gallery.dialogLabel', { title, index: lightbox + 1, total: images.length })}
           ref={dialogRef}
           onClick={closeLightbox}
         >
@@ -237,7 +244,7 @@ export default function Gallery({ images, title, index: galleryIndex }) {
             className="lightbox__close"
             ref={closeButtonRef}
             onClick={closeLightbox}
-            aria-label="关闭"
+            aria-label={t('gallery.close')}
           >
             ✕
           </button>
@@ -249,13 +256,13 @@ export default function Gallery({ images, title, index: galleryIndex }) {
               setLightbox((index) => Math.max(0, index - 1))
             }}
             disabled={lightbox === 0}
-            aria-label="上一张"
+            aria-label={t('gallery.prev')}
           >
             ←
           </button>
           <img
             src={images[lightbox].src}
-            alt={images[lightbox].caption || `${title} 展示图 ${lightbox + 1}`}
+            alt={imageAlt(images[lightbox], lightbox)}
             onClick={(event) => event.stopPropagation()}
           />
           <button
@@ -266,12 +273,12 @@ export default function Gallery({ images, title, index: galleryIndex }) {
               setLightbox((index) => Math.min(images.length - 1, index + 1))
             }}
             disabled={lightbox === images.length - 1}
-            aria-label="下一张"
+            aria-label={t('gallery.next')}
           >
             →
           </button>
           <p className="lightbox__caption">
-            {images[lightbox].caption || ' '}
+            {tf(images[lightbox].caption) || ' '}
             <span>
               {lightbox + 1} / {images.length}
             </span>

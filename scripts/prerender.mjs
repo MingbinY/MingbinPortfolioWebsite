@@ -42,6 +42,46 @@ function buildSeedScript(data) {
   return `<script type="application/json" id="${SEED_SCRIPT_ID}">${json}</script>`
 }
 
+/**
+ * 语言引导脚本：在 React 之前就定下语言，避免英文用户先看到中文再闪一下。
+ *
+ * 背景：预渲染出来的 HTML 是中文（构建期无浏览器信息）。如果只靠 React 在运行时
+ * 选语言，英文用户会看到中文内容闪现后才变英文。这里用一段**同步**内联脚本抢先处理：
+ *   · 用户手动选过语言（localStorage）→ 只把 URL 补成 ?lang=xx，不改判定
+ *   · 没选过且浏览器不是中文 → 直接认定英文，写 localStorage 并把 URL 补成 ?lang=en
+ * 脚本在 <script type="module">（defer 语义）之前同步执行，因此 React 首次渲染即为正确语言，
+ * 也避免了「HTML 中文 / 客户端英文」的 hydration 不一致。
+ * 用 replaceState 改网址，不产生额外历史记录。
+ */
+function buildLangBootstrapScript() {
+  const code = `(function(){try{
+var doc=document.documentElement,base=doc.getAttribute('data-base')||'';
+var m=/[?&]lang=(zh|en)(&|$)/.exec(location.search||'');
+var stored=null;try{stored=localStorage.getItem('portfolio-lang')}catch(e){}
+var lang;
+if(m){lang=m[1]}
+else if(stored==='zh'||stored==='en'){lang=stored}
+else{
+  var tags=[navigator.language].concat(navigator.languages||[]),picked=null;
+  for(var i=0;i<tags.length;i++){var t=String(tags[i]||'').toLowerCase();
+    if(t.indexOf('zh')===0){picked='zh';break}
+    if(t.indexOf('en')===0){picked='en';break}}
+  lang=picked||'zh';
+  if(lang==='en'){try{localStorage.setItem('portfolio-lang','en')}catch(e){}}
+}
+doc.lang=lang==='en'?'en':'zh-CN';
+if(lang==='en'){
+  var search=location.search||'';
+  var next=search?((/[?&]lang=/.test(search))?search.replace(/([?&])lang=(zh|en)/,'$1lang=en'):search+'&lang=en'):'?lang=en';
+  var url=location.pathname+next+location.hash;
+  // 部署在子目录时（base 形如 /sub/），replaceState 只接受同源且同 base 的地址
+  if(base&&base!=='/'&&url.indexOf(base)!==0){url=base.replace(/\\/$/,'')+url}
+  history.replaceState(history.state,'',url);
+}
+}catch(e){}})();`
+  return `<script>${code}</script>`
+}
+
 async function main() {
   for (const [label, path] of [
     ['构建产物 docs/index.html', templatePath],
@@ -69,8 +109,11 @@ async function main() {
     throw new Error(`预渲染结果过短（${appHtml ? appHtml.length : 0} 字节），疑似渲染失败，已中止。`)
   }
 
+  // 语言引导脚本放 </head> 之前：classic script 同步执行，而 <script type="module">
+  // 是 defer 语义，所以它一定先跑，React 首次渲染拿到的就是正确语言。
   const output = template
     .replace(ROOT_PATTERN, `<div id="root">${appHtml}</div>`)
+    .replace('</head>', `  ${buildLangBootstrapScript()}\n  </head>`)
     .replace('</body>', `  ${buildSeedScript(data)}\n  </body>`)
   await writeFile(templatePath, output, 'utf8')
 

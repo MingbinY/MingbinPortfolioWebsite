@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { usePortfolioData, useProject } from '../data/PortfolioContext.jsx'
 import { splitParagraphs } from '../data/portfolio.js'
+import { useI18n } from '../i18n/i18n.jsx'
 import Gallery from '../components/Gallery.jsx'
 import { ErrorPanel, LoadingPanel } from '../components/Feedback.jsx'
 
@@ -18,11 +19,12 @@ export default function ProjectPage() {
   const { slug } = useParams()
   const { status, error, retry, projects } = usePortfolioData()
   const { project, index, prev, next } = useProject(slug)
+  const { t, tf } = useI18n()
 
   if (status === 'loading') {
     return (
       <div className="page-narrow">
-        <LoadingPanel label="正在打开作品…" />
+        <LoadingPanel label={t('feedback.loadingProject')} />
       </div>
     )
   }
@@ -38,46 +40,44 @@ export default function ProjectPage() {
   if (!project) {
     return (
       <div className="page-narrow">
-        <h1 className="page-title">找不到这个作品</h1>
-        <p className="page-text">
-          链接里的 <code>{slug}</code> 在 projects.json 里没有对应条目（slug 拼写是否一致？）。
-        </p>
+        <h1 className="page-title">{t('project.notFoundTitle')}</h1>
+        <p className="page-text">{t('project.notFoundText', { slug })}</p>
         <Link className="btn btn--primary" to="/" state={{ scrollTo: 'projects' }}>
-          返回作品列表
+          {t('project.back')}
         </Link>
       </div>
     )
   }
 
-  const paragraphs = splitParagraphs(project.description)
+  const paragraphs = splitParagraphs(tf(project.description))
   const index2 = String(index + 1).padStart(2, '0')
 
   return (
     <article className="project-page" style={project.accent ? { '--card-accent': project.accent } : undefined}>
       <div className="project-page__topbar">
         <Link className="back-link" to="/" state={{ scrollTo: 'projects' }}>
-          ← 返回作品列表
+          {t('project.back')}
         </Link>
         <span className="project-page__crumb">
-          作品 {index2} / 共 {String(projects.length).padStart(2, '0')}
+          {t('project.crumb', { index: index2, total: String(projects.length).padStart(2, '0') })}
         </span>
       </div>
 
       {/* 模块一：图片 —— 横向滚动多图 */}
-      <Gallery images={project.gallery} title={project.title} index="01" />
+      <Gallery images={project.gallery} title={tf(project.title)} index="01" />
 
       {/* 模块二：作品名 */}
       <header className="project-head" id="project-title">
         <p className="project-head__eyebrow">
           {project.year ? <span>{project.year}</span> : null}
-          {project.role ? <span>{project.role}</span> : null}
+          {tf(project.role) ? <span>{tf(project.role)}</span> : null}
         </p>
-        <h1>{project.title}</h1>
-        {project.subtitle ? <p className="project-head__subtitle">{project.subtitle}</p> : null}
+        <h1>{tf(project.title)}</h1>
+        {tf(project.subtitle) ? <p className="project-head__subtitle">{tf(project.subtitle)}</p> : null}
         {project.tags.length ? (
           <ul className="tag-list tag-list--lg">
             {project.tags.map((tag) => (
-              <li key={tag}>{tag}</li>
+              <li key={tag.id}>{tf(tag.label)}</li>
             ))}
           </ul>
         ) : null}
@@ -87,19 +87,20 @@ export default function ProjectPage() {
         {/* 模块三：作品介绍 */}
         <section className="project-section" id="project-about">
           <h2 className="project-section__title">
-            <span>02</span>作品介绍
+            <span>02</span>
+            {t('project.section.about')}
           </h2>
           <div className="project-description">
             {paragraphs.length ? (
               paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)
             ) : (
-              <p className="project-description__empty">这个作品还没有填写介绍，去 projects.json 里补上 description 吧。</p>
+              <p className="project-description__empty">{t('project.descriptionEmpty')}</p>
             )}
 
             {project.highlights.length ? (
               <ul className="highlight-list">
-                {project.highlights.map((item) => (
-                  <li key={item}>{item}</li>
+                {project.highlights.map((item, i) => (
+                  <li key={`${i}-${tf(item).slice(0, 12)}`}>{tf(item)}</li>
                 ))}
               </ul>
             ) : null}
@@ -108,19 +109,19 @@ export default function ProjectPage() {
 
         <aside className="project-aside">
           <div className="info-card">
-            <h3>作品信息</h3>
-            <MetaRow label="年份" values={[project.year]} />
-            <MetaRow label="担任角色" values={[project.role]} />
-            <MetaRow label="平台" values={project.platforms} />
-            <MetaRow label="工具 / 技术" values={project.tools} />
-            <MetaRow label="标签" values={project.tags} />
+            <h3>{t('project.infoTitle')}</h3>
+            <MetaRow label={t('project.meta.year')} values={[project.year]} />
+            <MetaRow label={t('project.meta.role')} values={[tf(project.role)]} />
+            <MetaRow label={t('project.meta.platforms')} values={project.platforms.map((item) => tf(item.label))} />
+            <MetaRow label={t('project.meta.tools')} values={project.tools.map((item) => tf(item.label))} />
+            <MetaRow label={t('project.meta.tags')} values={project.tags.map((item) => tf(item.label))} />
             {project.links.length ? (
               <div className="meta-row">
-                <span className="meta-row__label">相关链接</span>
+                <span className="meta-row__label">{t('project.meta.links')}</span>
                 <span className="meta-row__value">
                   {project.links.map((link) => (
                     <a key={link.url} href={link.url} target="_blank" rel="noreferrer noopener">
-                      {link.label}
+                      {tf(link.label)}
                     </a>
                   ))}
                 </span>
@@ -133,42 +134,43 @@ export default function ProjectPage() {
       {/* 模块四：Demo 链接 */}
       <section className="project-section project-demo" id="project-demo">
         <h2 className="project-section__title">
-          <span>03</span>Demo 链接
+          <span>03</span>
+          {t('project.section.demo')}
         </h2>
         {project.demo ? (
           <div className="demo-card">
             <div>
-              <h3>上手试玩 / 观看演示</h3>
-              <p>点击右侧按钮打开 Demo（外部链接，新标签页打开）。</p>
+              <h3>{t('project.demoHeading')}</h3>
+              <p>{t('project.demoHint')}</p>
             </div>
             <a className="btn btn--primary btn--lg" href={project.demo.url} target="_blank" rel="noreferrer noopener">
-              {project.demo.label} ↗
+              {tf(project.demo.label)} ↗
             </a>
           </div>
         ) : (
           <div className="demo-card demo-card--empty">
             <div>
-              <h3>Demo 暂未公开</h3>
-              <p>想了解这个项目的可玩版本？直接邮件联系我即可。</p>
+              <h3>{t('project.demoMissingTitle')}</h3>
+              <p>{t('project.demoMissingText')}</p>
             </div>
           </div>
         )}
       </section>
 
       {prev || next ? (
-        <nav className="project-nav" aria-label="作品切换">
+        <nav className="project-nav" aria-label={t('project.navLabel')}>
           {prev ? (
             <Link className="project-nav__item" to={`/project/${prev.slug}`}>
-              <span>← 上一个作品</span>
-              <strong>{prev.title}</strong>
+              <span>{t('project.prev')}</span>
+              <strong>{tf(prev.title)}</strong>
             </Link>
           ) : (
             <span />
           )}
           {next ? (
             <Link className="project-nav__item project-nav__item--next" to={`/project/${next.slug}`}>
-              <span>下一个作品 →</span>
-              <strong>{next.title}</strong>
+              <span>{t('project.next')}</span>
+              <strong>{tf(next.title)}</strong>
             </Link>
           ) : (
             <span />
