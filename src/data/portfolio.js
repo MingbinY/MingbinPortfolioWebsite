@@ -74,6 +74,9 @@ export function normalizeSite(raw) {
   const nav = toArray(site.nav)
     .filter((item) => item && item.label)
     .map((item) => ({ label: item.label, to: item.to || '/', scrollTo: item.scrollTo || null }))
+    // 首页「关于我」区块在没有 about 字段时不渲染；此时必须把指向它的导航项一起去掉，
+    // 否则点「关于」会静默失效（ScrollManager 找不到元素 → 回落滚到顶部，看起来像死按钮）。
+    .filter((item) => item.scrollTo !== 'about' || Boolean(site.about))
   return {
     ...site,
     nav: nav.length ? nav : DEFAULT_SITE.nav,

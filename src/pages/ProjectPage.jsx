@@ -64,7 +64,7 @@ export default function ProjectPage() {
       </div>
 
       {/* 模块一：图片 —— 横向滚动多图 */}
-      <Gallery images={project.gallery} title={project.title} />
+      <Gallery images={project.gallery} title={project.title} index="01" />
 
       {/* 模块二：作品名 */}
       <header className="project-head" id="project-title">
@@ -87,7 +87,7 @@ export default function ProjectPage() {
         {/* 模块三：作品介绍 */}
         <section className="project-section" id="project-about">
           <h2 className="project-section__title">
-            <span>03</span>作品介绍
+            <span>02</span>作品介绍
           </h2>
           <div className="project-description">
             {paragraphs.length ? (
@@ -133,7 +133,7 @@ export default function ProjectPage() {
       {/* 模块四：Demo 链接 */}
       <section className="project-section project-demo" id="project-demo">
         <h2 className="project-section__title">
-          <span>04</span>Demo 链接
+          <span>03</span>Demo 链接
         </h2>
         {project.demo ? (
           <div className="demo-card">

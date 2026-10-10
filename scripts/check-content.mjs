@@ -52,6 +52,51 @@ async function collectFiles(dir, base = dir) {
   return files
 }
 
+/**
+ * 收集 index.html 里引用的本地图片（og:image / twitter:image）。
+ *
+ * 返回相对 public/ 的路径。站外 URL 与带域名的地址会被忽略 —— 那些不占 public/ 目录，
+ * 也不需要在这里校验存在性。
+ */
+async function collectHtmlImageRefs() {
+  let html
+  try {
+    html = await readFile(path.join(ROOT, 'index.html'), 'utf8')
+  } catch {
+    return []
+  }
+  const refs = new Set()
+  // 只匹配 <meta property|name="og:image|twitter:image" content="...">
+  const pattern = /<meta\b[^>]*(?:property|name)="(?:og:image|twitter:image)"[^>]*content="([^"]+)"/gi
+  const siteHost = await readSiteHost()
+  for (const match of html.matchAll(pattern)) {
+    const value = match[1].trim()
+    if (!value) continue
+    if (isRemote(value)) {
+      // 只有指向本站域名（public/CNAME）的绝对地址才对应 public/ 下的本地文件
+      const match2 = /^https?:\/\/([^/]+)(\/.*)?$/i.exec(value)
+      if (!match2) continue
+      const host = match2[1].toLowerCase()
+      const pathname = (match2[2] || '').replace(/^\/+/, '')
+      if (!pathname) continue
+      if (siteHost && host === siteHost) refs.add(pathname)
+      continue
+    }
+    refs.add(value.replace(/^\.?\//, ''))
+  }
+  return [...refs]
+}
+
+/** 站点 canonical 域名（public/CNAME），用于判断 og:image 是否指向本站 */
+async function readSiteHost() {
+  try {
+    const cname = (await readFile(path.join(PUBLIC_DIR, 'CNAME'), 'utf8')).trim().split(/\s+/)[0]
+    return cname ? cname.toLowerCase() : null
+  } catch {
+    return null
+  }
+}
+
 async function main() {
   let json
   try {
@@ -152,6 +197,16 @@ async function main() {
     referenced.add(relative)
     if (!(await fileExists(localPath(image)))) {
       errors.push(`site.about.portrait：图片不存在 → public/${relative}`)
+    }
+  }
+
+  // 社交分享图（index.html 里的 og:image / twitter:image）不算「未被引用」。
+  // 这些图由 HTML 引用而非 projects.json，所以要从 index.html 里单独收集。
+  const htmlImageRefs = await collectHtmlImageRefs()
+  for (const relative of htmlImageRefs) {
+    referenced.add(relative)
+    if (!(await fileExists(path.join(PUBLIC_DIR, relative)))) {
+      errors.push(`index.html 的分享图不存在 → public/${relative}`)
     }
   }
 

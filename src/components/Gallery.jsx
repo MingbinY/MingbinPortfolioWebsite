@@ -4,9 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  * 模块一：图片区 —— 横向滚动多图
  * 支持：左右按钮、鼠标拖拽、触屏滑动、滚轮横滚、点击放大（灯箱，Esc/←/→ 可操作）
  */
-export default function Gallery({ images, title }) {
+export default function Gallery({ images, title, index: galleryIndex }) {
   const scrollerRef = useRef(null)
   const dragRef = useRef({ active: false, startX: 0, startLeft: 0, moved: 0 })
+  const dialogRef = useRef(null)
+  const closeButtonRef = useRef(null)
+  const lastIndexRef = useRef(-1)
   const [edges, setEdges] = useState({ prev: false, next: false, progress: 0 })
   const [lightbox, setLightbox] = useState(-1)
   const hasImages = images.length > 0
@@ -40,13 +43,81 @@ export default function Gallery({ images, title }) {
   useEffect(() => {
     if (lightbox < 0) return undefined
     const onKey = (event) => {
-      if (event.key === 'Escape') setLightbox(-1)
+      if (event.key === 'Escape') {
+        setLightbox(-1)
+        return
+      }
       if (event.key === 'ArrowRight') setLightbox((index) => Math.min(images.length - 1, index + 1))
       if (event.key === 'ArrowLeft') setLightbox((index) => Math.max(0, index - 1))
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [lightbox, images.length])
+
+  /**
+   * 模态行为：打开时把焦点移进对话框，并把 Tab 限制在框内。
+   *
+   * 没有焦点陷阱时，aria-modal="true" 只是「声明」——实际 Tab 会一路跑到背后的
+   * 页面链接上（缩略图 → 关闭 → 下一张 → 页面链接…），键盘用户会彻底迷路。
+   */
+  useEffect(() => {
+    if (lightbox < 0) return undefined
+    const dialog = dialogRef.current
+    if (!dialog) return undefined
+
+    const focusables = () => [...dialog.querySelectorAll('button:not([disabled])')]
+    closeButtonRef.current?.focus()
+
+    const onTab = (event) => {
+      if (event.key !== 'Tab') return
+      const items = focusables()
+      if (items.length === 0) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      const active = document.activeElement
+
+      if (event.shiftKey && (active === first || !dialog.contains(active))) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && (active === last || !dialog.contains(active))) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+
+    dialog.addEventListener('keydown', onTab)
+    return () => dialog.removeEventListener('keydown', onTab)
+  }, [lightbox])
+
+  /** 关闭后把焦点归还给触发的缩略图（列表重渲染后元素可能已更换，故重新查找） */
+  useEffect(() => {
+    if (lightbox >= 0) return undefined
+    const index = lastIndexRef.current
+    lastIndexRef.current = -1
+    if (index < 0) return undefined
+    scrollerRef.current?.querySelectorAll('.gallery__thumb')[index]?.focus()
+    return undefined
+  }, [lightbox])
+
+  /**
+   * 锁定背景滚动。
+   *
+   * 遮罩虽然 position:fixed 且铺满视口，但滚动会链式传给背后的页面：
+   * 在打开的大图上滚轮，实测 window.scrollY 会跟着走。关闭后恢复原值。
+   */
+  useEffect(() => {
+    if (lightbox < 0) return undefined
+    const body = document.body
+    const html = document.documentElement
+    const prevBody = body.style.overflow
+    const prevHtml = html.style.overflow
+    body.style.overflow = 'hidden'
+    html.style.overflow = 'hidden'
+    return () => {
+      body.style.overflow = prevBody
+      html.style.overflow = prevHtml
+    }
+  }, [lightbox])
 
   const scrollByCard = (direction) => {
     const el = scrollerRef.current
@@ -82,8 +153,11 @@ export default function Gallery({ images, title }) {
 
   const openLightbox = (index) => {
     if (dragRef.current.moved > 8) return // 拖拽结束的抬手不算点击
+    lastIndexRef.current = index
     setLightbox(index)
   }
+
+  const closeLightbox = () => setLightbox(-1)
 
   if (!hasImages) {
     return (
@@ -95,6 +169,11 @@ export default function Gallery({ images, title }) {
 
   return (
     <section className="gallery" aria-label={`${title} 展示图`}>
+      {galleryIndex ? (
+        <h2 className="project-section__title gallery__title">
+          <span>{galleryIndex}</span>图片展示
+        </h2>
+      ) : null}
       <div className="gallery__bar">
         <span className="gallery__hint">横向滚动 / 拖拽查看 · 点击放大 · 共 {images.length} 张</span>
         <div className="gallery__actions">
@@ -145,8 +224,21 @@ export default function Gallery({ images, title }) {
       </div>
 
       {lightbox >= 0 ? (
-        <div className="lightbox" role="dialog" aria-modal="true" onClick={() => setLightbox(-1)}>
-          <button type="button" className="lightbox__close" onClick={() => setLightbox(-1)} aria-label="关闭">
+        <div
+          className="lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${title} 图片查看器（第 ${lightbox + 1} / ${images.length} 张）`}
+          ref={dialogRef}
+          onClick={closeLightbox}
+        >
+          <button
+            type="button"
+            className="lightbox__close"
+            ref={closeButtonRef}
+            onClick={closeLightbox}
+            aria-label="关闭"
+          >
             ✕
           </button>
           <button

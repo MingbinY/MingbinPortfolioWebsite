@@ -3,7 +3,7 @@ import { usePortfolioData } from '../data/PortfolioContext.jsx'
 import ProjectList from '../components/ProjectList.jsx'
 import { EmptyPanel, ErrorPanel, SkeletonCard } from '../components/Feedback.jsx'
 
-function Hero({ site, projects }) {
+function Hero({ site, projects, ready }) {
   const stats = useMemo(() => {
     const years = projects.map((project) => Number(project.year)).filter((year) => Number.isFinite(year) && year > 1900)
     const span =
@@ -57,15 +57,17 @@ function Hero({ site, projects }) {
           ))}
         </div>
 
-        <dl className="hero__stats">
-          {stats.map((item) => (
-            <div key={item.label}>
-              <dt>{item.label}</dt>
-              <dd>{item.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
+        {/* 数据到达前不渲染统计：否则会先显示「00 个作品 / 年份跨度 —」这种确定但错误的数字 */}
+        {ready ? (
+          <dl className="hero__stats">
+            {stats.map((item) => (
+              <div key={item.label}>
+                <dt>{item.label}</dt>
+                <dd>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}      </div>
     </section>
   )
 }
@@ -152,7 +154,7 @@ export default function HomePage() {
 
   return (
     <>
-      <Hero site={site} projects={projects} />
+      <Hero site={site} projects={projects} ready={status === 'ready'} />
 
       <section className="section" id="projects">
         <div className="section__head">
@@ -166,10 +168,13 @@ export default function HomePage() {
         </div>
 
         {status === 'loading' ? (
-          <div className="project-grid">
-            {[0, 1, 2, 3, 4, 5].map((key) => (
-              <SkeletonCard key={key} />
-            ))}
+          <div role="status" aria-busy="true">
+            <span className="sr-only">正在加载作品数据…</span>
+            <div className="project-grid">
+              {[0, 1, 2, 3, 4, 5].map((key) => (
+                <SkeletonCard key={key} />
+              ))}
+            </div>
           </div>
         ) : null}
 

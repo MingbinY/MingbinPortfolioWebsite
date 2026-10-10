@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { PortfolioProvider, usePortfolioData } from './data/PortfolioContext.jsx'
 import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
@@ -60,5 +60,24 @@ export default function App({ initialData = null }) {
     <PortfolioProvider initialData={initialData}>
       <Shell />
     </PortfolioProvider>
+  )
+}
+
+/**
+ * 浏览器客户端入口组合。
+ *
+ * Router 做成可注入的，是为了让同一套 UI 既能在浏览器跑 HashRouter，
+ * 也能在构建期用 StaticRouter 预渲染成静态 HTML（见 src/entry-server.jsx）。
+ * 默认 HashRouter，因此 <Main /> 的默认行为与改造前完全一致。
+ *
+ * initialData 约定为「已 normalize 的 { site, projects }」，由 Main 直接透传。
+ */
+export function Main({ Router = HashRouter, routerProps = {}, initialData = null }) {
+  return (
+    <React.StrictMode>
+      <Router {...routerProps}>
+        <App initialData={initialData} />
+      </Router>
+    </React.StrictMode>
   )
 }
