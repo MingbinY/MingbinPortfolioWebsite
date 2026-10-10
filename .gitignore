@@ -1,8 +1,12 @@
 # dependencies
 node_modules/
 
-# build output：产物输出到 docs/ 并且要提交进仓库（GitHub Pages 只能从根目录或 /docs 发布）
-# 旧的 dist/ 已弃用，如本地还有残留可以随手删掉
+# build output
+# 部署在 Cloudflare Pages（连 Git、自己跑 npm run build），所以产物不需要进仓库：
+#   docs/  客户端产物 + 预渲染后的 index.html（Build output directory 填这个）
+#   dist/  预渲染用的 SSR bundle 等构建中间物
+# 需要看构建结果时本地跑 npm run build / npm run preview。
+docs/
 dist/
 
 # logs

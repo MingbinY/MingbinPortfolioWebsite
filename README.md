@@ -14,13 +14,14 @@
 | --- | --- |
 | 框架 | React 19 + Vite |
 | 路由 | `react-router-dom`，使用 **HashRouter**（`#/project/xxx`） |
-| 数据 | 运行时 `fetch` 静态 JSON，无接口、无数据库、无后端 |
+| 数据 | `public/data/projects.json` 静态 JSON，无接口、无数据库、无后端。构建时预渲染进 HTML，客户端首帧用它、随后仍是同一个文件 |
 | 样式 | 原生 CSS（`src/styles/global.css`、`src/styles/pages.css`），深色主题 + CSS 变量 |
 | 图片 | `public/images/**` 下的静态文件（含自动生成的占位 SVG） |
+| 渲染 | 构建期预渲染（SSG）：首页渲染成静态 HTML 写进 `docs/index.html`，客户端再 hydration |
 
 ### 为什么用 HashRouter / 相对路径
 
-`base: './'` + HashRouter 意味着构建产物 `dist/` 可以直接丢到任意静态托管（GitHub Pages 子目录、Netlify、Vercel、对象存储、Nginx、内网共享目录），**不需要任何服务端 rewrite 规则**。
+`base: './'` + HashRouter 意味着构建产物 `docs/` 可以直接丢到任意静态托管（Cloudflare Pages、Netlify、Vercel、对象存储、Nginx、内网共享目录），**不需要任何服务端 rewrite 规则**。
 
 ---
 
@@ -30,8 +31,8 @@
 cd MingbinPortfolio
 npm install          # 首次安装依赖
 npm run dev          # 开发预览 http://localhost:5173
-npm run build        # 打包到 dist/
-npm run preview      # 本地预览打包结果
+npm run build        # 构建到 docs/（= 客户端打包 + SSR 预渲染 + 注入，见第 7 节）
+npm run preview      # 本地预览构建结果
 npm run check        # 内容自检：JSON 语法 / 必填字段 / 图片是否存在 / slug 是否重复
 ```
 
@@ -46,18 +47,24 @@ npm run check        # 内容自检：JSON 语法 / 必填字段 / 图片是否�
 
 | 做法 | 改内容的操作 | 是否需要重新打包 | 是否需要后端 |
 | --- | --- | --- | --- |
-| ✅ **本项目**：JSON 放 `public/data/`，页面 `fetch` 加载 | 直接改 `public/data/projects.json` | 不需要（线上替换该 json 文件 + 刷新即可） | 不需要 |
+| ✅ **本项目**：JSON 放 `public/data/` | 改 `public/data/projects.json` 后提交（平台自动构建） | **需要**（原因见下方提示） | 不需要 |
 | 把 JSON `import` 进源码打包 | 改 JSON 后重新 `npm run build` | 需要 | 不需要 |
 | 接 Headless CMS / 数据库 | 在后台界面点点点 | 不需要 | **需要**（或第三方服务） |
 
 所以：
 
-- **想让内容更好维护** → 当前方案已满足，改 JSON 就行；
+- **想让内容更好维护** → 当前方案已满足，改 JSON 就行（不用改任何代码）；
 - **想要「浏览器里可视化编辑 + 保存立即生效」**（像 Wix 那样拖拽、上传图片） → 那才需要后端或第三方服务（例如 Strapi / Directus 自建后端，或 Supabase / Contentful / GitHub-CMS 这类托管服务）。除此之外没有必须依赖后端的地方。
+
+> ⚠️ **为什么改 JSON 也要重新构建**：本项目做了**构建期预渲染**——构建时把 `projects.json`
+> 渲染进 `docs/index.html`，并把同一份数据以 `<script type="application/json" id="portfolio-seed-data">`
+> 内联进去，客户端首帧直接用（这样首屏就有内容，且不会出现 hydration 不一致）。
+> 因此**单独替换线上 `data/projects.json` 不会生效**。好在部署在 Cloudflare Pages（连 Git），
+> push 后平台会自动构建，本地不用跑构建。
 
 两个纯前端方案的小限制（都很好绕开）：
 
-1. 页面必须通过 `http(s)` 打开。直接双击 `dist/index.html` 用 `file://` 打开时，浏览器会禁止 `fetch` 本地文件（会显示错误面板并给出提示）。用 `npm run dev`、`npm run preview` 或任意静态服务器打开即可。
+1. 页面必须通过 `http(s)` 打开。直接双击 `docs/index.html` 用 `file://` 打开时，浏览器会禁止 `fetch` 本地文件（会显示错误面板并给出提示）。用 `npm run dev`、`npm run preview` 或任意静态服务器打开即可。
 2. 图片和 JSON 都是静态文件，内容更新后访问者需要刷新页面（或在服务器/CDN 上设置较短的缓存时间）。
 
 ---
@@ -67,7 +74,8 @@ npm run check        # 内容自检：JSON 语法 / 必填字段 / 图片是否�
 ```
 MingbinPortfolio/
 ├─ index.html
-├─ vite.config.js
+├─ vite.config.js              ← 客户端构建配置（outDir: docs）
+├─ vite.config.ssr.js          ← 预渲染(SSG)专用配置（输出 dist/ssr）
 ├─ package.json
 ├─ public/
 │  ├─ data/projects.json        ← ★ 唯一的内容源（改这里）
@@ -77,10 +85,12 @@ MingbinPortfolio/
 ├─ scripts/
 │  ├─ add-project.mjs           ← npm run new:project 新增作品向导
 │  ├─ check-content.mjs         ← npm run check 内容自检（JSON / 字段 / 图片）
+│  ├─ prerender.mjs             ← 把首页 HTML + 数据种子注入 docs/index.html
 │  └─ gen-placeholders.mjs      ← npm run gen:art 生成占位图
 └─ src/
-   ├─ main.jsx                  ← 入口（HashRouter）
-   ├─ App.jsx                   ← 路由表 / 滚动管理 / 站点标题
+   ├─ entry-client.jsx          ← 浏览器入口（HashRouter + hydration）
+   ├─ entry-server.jsx          ← 预渲染入口（StaticRouter + renderToString）
+   ├─ App.jsx                   ← 路由表 / 滚动管理 / 站点标题 / Main 组合
    ├─ data/
    │  ├─ portfolio.js           ← 读取 + 校验 + 归一化 JSON（含资源路径解析）
    │  └─ PortfolioContext.jsx   ← 全站只请求一次，Context 分发 + 重试
@@ -261,120 +271,35 @@ npm run build      # 产物输出到 docs/（vite.config.js 里 build.outDir 指
 | Root directory（Advanced） | 留空 | 仓库根目录就是项目根目录 |
 | Environment variables | `NODE_VERSION` = `22` | Vite 8 需要 Node ≥ 20.19 / ≥ 22.12；仓库里已放 `.nvmrc`（内容 `22`），双保险 |
 
+- **`npm run build` 必须跑完整**，它其实是三步：客户端打包 → SSR 预渲染 → 注入首页 HTML。
+  **不要**把 Build command 改成 `exit 0` 之类的跳过构建——没有第 3 步，`docs/index.html`
+  只是个空壳（`<div id="root"></div>`），页面内容全靠 JS 渲染，SEO 与无 JS 场景就都没了。
 - 用 HashRouter + 相对路径，**不需要** `_redirects`、`_headers` 或任何 404 规则
-- 想「不构建、直接发布仓库里已提交的产物」也可以：Build command 填 `exit 0`，输出目录仍是 `docs`，构建耗时最短
 - 绑定域名：项目 → **Custom domains → Set up a domain**，填 `mingbinportfolio.com`；域名 NS 在 Cloudflare 时一键完成，否则按提示加 CNAME
-- 仓库根目录那个 `CNAME` 文件是给 GitHub Pages 用的，Cloudflare 不读它，留着无害；但**同一个域名不要同时挂在 GitHub Pages 和 Cloudflare Pages 上**
+- 仓库根目录的 `CNAME` 是早年给 GitHub Pages 留的，Cloudflare 不读它，留着无害；但**同一个域名不要同时挂在 GitHub Pages 和 Cloudflare Pages 上**
 
-### GitHub Pages（无需 CI，直接发布仓库里的 docs/）
+**产物不进仓库**：`docs/` 与 `dist/` 都已写进 `.gitignore`，由 Cloudflare 每次 push 重新构建。
+需要看构建结果时本地跑 `npm run build`，再用 `npm run preview` 预览。
 
-产物目录之所以叫 `docs/` 而不是 `dist/`，就是因为 GitHub Pages 的「Deploy from a branch」只允许选
-**根目录 `/`** 或 **`/docs`**；把产物固定输出到 `docs/` 并提交进仓库，就能不写任何工作流直接发布。
+### 曾经用过、现已停用的部署方式（2026-10-10 起不再使用）
 
-1. `npm run build` 生成/刷新 `docs/`
-2. 把 `docs/` 一起提交并推送：
-   ```bash
-   git add docs && git commit -m "build: 更新站点产物" && git push
-   ```
-3. GitHub 仓库 → **Settings → Pages → Build and deployment**
-   - Source 选 **Deploy from a branch**
-   - Branch 选 **main**，Folder 选 **/docs** → Save
-4. 一两分钟后访问：`https://<你的用户名>.github.io/<仓库名>/`（本项目即 `https://mingbiny.github.io/MingbinPortfolioWebsite/`）
-
-> `public/.nojekyll` 会随构建拷进 `docs/`，用来关掉 Pages 默认的 Jekyll 处理（否则下划线开头的文件会被忽略）。
->
-> **自定义域名（CNAME）**：本项目把域名放在 `public/CNAME`（内容就是一整行纯域名，例如 `mingbinportfolio.com`），
-> 构建时自动拷成 `docs/CNAME`。**不要只依赖 GitHub 网页生成的 `docs/CNAME`**——`vite build` 每次都清空 `docs/`
-> （`emptyOutDir: true`），会被一起删掉；放在 `public/CNAME` 才是持久的。同时记得在 Pages 设置里填 Custom domain，
-> 并在 DNS 里加一条 CNAME 记录指向 `<用户名>.github.io`。
-
-### 腾讯云 COS 静态网站托管（用 GitHub 仓库自动部署）
-
-仓库里已经带了现成的工作流 [`.github/workflows/deploy-cos.yml`](.github/workflows/deploy-cos.yml)：
-push 到 `main` 且 `docs/**` 有变化时，自动把 `docs/` 同步到 COS 根目录（产物已在仓库里，CI 不用装依赖、不用构建，一次部署十几秒）。
-
-**① 在 GitHub 里填 4 个 Secret**（仓库 → Settings → Secrets and variables → Actions → New repository secret）：
-
-| Secret 名称 | 填什么 | 示例 |
+| 方式 | 状态 | 备注 |
 | --- | --- | --- |
-| `TENCENT_SECRET_ID` | 腾讯云 API 密钥 SecretId（建议用**子账号**密钥，只授权这一个存储桶） | `AKIDxxxxxxxxxxxxxxxx` |
-| `TENCENT_SECRET_KEY` | 对应 SecretKey | `xxxxxxxxxxxxxxxx` |
-| `COS_BUCKET` | 存储桶名称，格式 **桶名-APPID**（不是访问域名） | `myportfolio-1250000000` |
-| `COS_REGION` | 存储桶地域 | `ap-guangzhou` |
+| GitHub Pages（发布仓库里的 `docs/`） | **停用** | 当初产物目录叫 `docs/` 而不是 `dist/`，就是为了 Pages 的「Deploy from a branch」只允许选根目录或 `/docs`。产物现在已不再提交，这条路径随之失效 |
+| 腾讯云 COS 静态网站托管 | **停用** | 对应工作流 `.github/workflows/deploy-cos.yml` 已删除（它会在 `docs/**` 变动时触发，现在只会白跑）。`.nojekyll`、`public/CNAME` 是为上面两种旧方式留的，对 Cloudflare 无害，保留 |
 
-**② COS 控制台里的设置**：
-
-| 位置 | 填什么 |
-| --- | --- |
-| 存储桶访问权限 | **公有读私有写**（静态网站必须允许匿名 GET） |
-| 静态网站 → 索引文档 | `index.html` |
-| 静态网站 → 错误文档 | `index.html`（HashRouter 其实不会触发；填上以后换 BrowserRouter 也不怕） |
-| 静态网站 → 访问节点 | 直接用，或绑定自定义域名 |
-| （可选）CDN 加速 | 绑定自定义域名后开启；**更新内容后刷新 CDN 缓存**（至少刷新 `/index.html`、`/data/*.json`） |
-
-**③ 上传路径要点**：工作流执行 `coscmd upload -rs --delete ./docs/ /`，即把 **`docs/` 里的内容**放到桶根目录，
-线上地址是 `https://<桶名>.cos.<地域>.myqcloud.com/index.html`（不是 `.../docs/index.html`）。
-因为构建用相对路径 + HashRouter，放在某个前缀（如 `/site/`）也能跑，但放根目录最省事。
-
-**④ 权限最小化**：给子账号只挂一个自定义策略，例如
-
-```json
-{
-  "version": "2.0",
-  "statement": [
-    {
-      "effect": "allow",
-      "action": ["cos:PutObject", "cos:GetObject", "cos:DeleteObject", "cos:HeadObject", "cos:GetBucket"],
-      "resource": ["qcs::cos:ap-guangzhou:uid/1250000000:myportfolio-1250000000/*"]
-    }
-  ]
-}
-```
-
-> 如果改为「CI 自己构建、仓库不提交产物」：把工作流里被注释的 Node 安装 + `npm ci && npm run build` 打开，
-> 上传路径保持 `./docs/`（或在 `vite.config.js` 里改回 `dist/` 后改为本路径），并停止提交生成物。
-
-#### 本次实际部署记录（2026-10-08）
-
-| 项 | 值 |
-| --- | --- |
-| 存储桶 | `697f-static-portfolio-1-d7gnhlh7v5c3e580c-1313536934`（ap-singapore，账号里唯一配置了静态网站的桶） |
-| 上传方式 | `python _tools/cos_upload.py --bucket <桶名> --region ap-singapore`（官方 cos-python-sdk-v5，28 个文件 / 6.32MB） |
-| 桶权限 | 由脚本 `_tools/cos_make_public.py` 设为**公有读私有写**（原本是私有，匿名访问会 403） |
-| 静态网站 | 索引文档 `index.html`，错误文档 `index.html` |
-| 访问地址 | `https://<桶名>.cos-website.ap-singapore.myqcloud.com/` |
-
-> ⚠️ **该桶开启了「强制下载」**（响应头 `Content-Disposition: attachment` + `x-cos-force-download: true`），
-> 直接用 COS 域名在浏览器打开会变成**下载 index.html** 而不是渲染页面；对象级 `Content-Disposition: inline`
-> 覆盖不了桶级设置，SDK 也没有对应开关。解决办法（任选其一）：
-> ① COS 控制台 → 该桶 → 关闭「强制下载」；② **推荐**：绑定自定义域名（如 `mingbinportfolio.com`，
-> 新加坡地域无需备案，可配免费证书 + CDN，且不受强制下载影响）；③ 用云开发 CloudBase 静态托管自带的访问域名
-> （这个桶正是 CloudBase 静态托管环境创建的）。
->
-> 另外，若你用的其实是**表单式部署**（腾讯云开发 CloudBase 静态托管 / CODING 静态网站 / Vercel、Netlify 等），
-> 字段这样填：
->
-> | 表单字段 | 填什么 | 说明 |
-> | --- | --- | --- |
-> | 代码仓库 / 分支 | `MingbinY/MingbinPortfolioWebsite` · `main` | |
-> | 构建命令 | `npm ci && npm run build` | 想让平台自己构建就填这个；仓库里已有产物、不想构建可留空 |
-> | 构建产物目录 / 发布目录 | `docs` | 对应 `vite.config.js` 的 `build.outDir`；写成 `docs` 或 `/docs` 均可 |
-> | **部署路径 / 目标路径 / 部署到** | **`/`**（根目录） | 产物内部用的是相对路径，放根目录最标准 |
-> | Node 版本 | `22` | 仅构建时需要 |
-> | 环境变量 | 不需要 | |
->
-> 注意：**别把「部署路径」也填成 `docs`**，否则线上会变成 `/docs/index.html`（相对引用仍能跑，但地址很别扭）。
-> 如果这个托管空间里还要放别的站点、必须放子目录，可填 `/portfolio` 之类前缀，然后访问
-> `https://<域名>/portfolio/index.html`（HashRouter 不受影响）。
-> 验证是否部署对：访问 `https://<域名>/data/projects.json` 能返回 JSON 就说明路径正确。
+> 需要回滚到旧方式的话，从 git 历史里找回 `deploy-cos.yml` 即可（删于 2026-10-10）。
+> 注意旧流程的前提是「产物提交进仓库」，而现在已经改成平台侧构建。
 
 ### 只改文案 / 换图时
 
-不动代码的话，**不必重新构建**：直接替换服务器上的 `docs/data/projects.json` 与 `docs/images/**`，访问者刷新即可看到新内容。
-如果走的是 GitHub 仓库，也可以只提交这两个路径下的改动，Pages 会重新发布。
+改 `public/data/projects.json`（文案、slug、图片路径）或替换 `public/images/**`，然后 **commit + push**。
+Cloudflare Pages 会自动重新构建并发布。
 
+- ⚠️ **不要再指望「只替换线上 `data/projects.json`」**：数据在构建时已被内联进 `docs/index.html`
+  与种子脚本，单独换 JSON 不会生效（原因见第 3 节）。必须重新构建。
 - 若托管平台对静态资源开了长时间强缓存，把 `data/*.json` 与 `images/*` 的缓存时间调短一点，更新会更及时。
-- `docs/` 是生成物：**每次跑 `npm run build` 后记得把它一起提交**，否则线上还是旧版本。
+- `docs/` 与 `dist/` 都是生成物，**不要提交**（已在 `.gitignore` 里）。
 
 ---
 
@@ -387,7 +312,18 @@ push 到 `main` 且 `docs/**` 有变化时，自动把 `docs/` 同步到 COS 根
 链接里的 slug 与 JSON 中的 `slug` 不一致，检查拼写。
 
 **想改成 BrowserRouter 的干净网址？**
-把 `src/main.jsx` 里的 `HashRouter` 换成 `BrowserRouter`，并在托管平台配置「所有路径 rewrite 到 index.html」。这属于托管配置，不是后端。
+把 `src/entry-client.jsx` 里的 `HashRouter` 换成 `BrowserRouter`，并在托管平台配置「所有路径 rewrite 到 index.html」。这属于托管配置，不是后端。
+注意预渲染入口 `src/entry-server.jsx` 用的是 `StaticRouter`，与客户端路由方式无关，改这边不受影响。
+
+**改了 `projects.json`，线上没变化？**
+数据在构建时被内联进 `docs/index.html`，所以**必须重新构建**。push 之后 Cloudflare Pages 会自动构建；若没触发，去 Cloudflare 的 Deployments 看那次构建的日志。
+
+**Cloudflare 构建失败 / 页面空白？**
+① 确认 Build output directory 是 `docs` 而不是 `dist`；② 确认 Build command 是 `npm run build`（**不要**跳过构建：跳过的话 `docs/index.html` 是空壳，页面会全白）；③ 确认 Node 版本满足 Vite 8 要求（`.nvmrc` 已写 `22`，或设环境变量 `NODE_VERSION=22`）。
+
+**为什么 `docs/` 和 `dist/` 不在仓库里了？**
+2026-10-10 起改用 Cloudflare Pages（连 Git、平台侧构建），产物不再提交。本地 `npm run build` 后可以用 `npm run preview` 查看。
 
 **想加「关于我 / 联系方式」独立页面？**
 在 `src/pages/` 新建一个页面组件，在 `src/App.jsx` 里加一条 `<Route>`，再去 JSON 的 `site.nav` 里加一个导航项即可，内容依然可以放在 JSON 里。
+⚠️ 若新增导航项用的是 `scrollTo` 锚点，请确认首页真的有对应 `id` 的区块——`normalizeSite` 会在 `site.about` 缺失时自动过滤掉指向 `#about` 的导航项，避免出现点了没反应的死按钮。

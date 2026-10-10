@@ -2,17 +2,20 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// 纯静态站点：base 用相对路径，方便部署到任意目录 / 任意静态托管（GitHub Pages、Netlify、Vercel、
-// 对象存储、Nginx…）。
-// 构建产物输出到 docs/ 并提交进仓库：GitHub Pages 的「Deploy from a branch」只允许选
-// 根目录 / 或 /docs，所以把产物固定放 docs/ 就能「不用 CI、直接发布」。
-// 注意：docs/ 是生成物，每次改完内容记得 npm run build 并把它一起提交。
+// 纯静态站点：base 用相对路径，方便部署到任意目录 / 任意静态托管（Cloudflare Pages、
+// Netlify、Vercel、对象存储、Nginx…）。
+//
+// 部署现状（2026-10-10 起）：托管在 Cloudflare Pages，连本仓库、由它执行 npm run build，
+// Build output directory 填 docs。因此 docs/ 与 dist/ 都已加进 .gitignore，不再提交产物。
 //
 // 构建分三步（见 package.json 的 build 脚本）：
 //   1. vite build                     → 客户端产物写入 docs/
 //   2. vite build --config vite.config.ssr.js
-//                                     → 预渲染用的服务端 bundle 写入 dist/ssr/（已 gitignore，不发布）
+//                                     → 预渲染用的服务端 bundle 写入 dist/ssr/
 //   3. node scripts/prerender.mjs     → 把首页 HTML 注入 docs/index.html，让产物自带内容
+//
+// 注意：没有第 3 步的 docs/index.html 只是个空壳（<div id="root"></div>），
+// 页面内容全靠 JS 渲染。所以托管平台必须执行完整的 npm run build，不能跳过构建。
 //
 // SSR 用独立配置的原因：build.ssr / publicDir 这些字段是全局的，写在本文件里会连带影响
 // 客户端构建（实测会把客户端构建也变成 SSR 构建，并把 public/ 复制进 dist/ssr）。
